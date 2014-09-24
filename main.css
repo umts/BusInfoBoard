@@ -1,0 +1,39 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: black;
+  font-family: 'Open Sans', sans-serif;
+}
+
+h1 {
+  color: white;
+  font-size: 4em;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  margin-left: 10px;
+}
+
+.route {
+  border-radius: 150px;
+  margin-bottom: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
+  font-size: 3em;
+  font-weight: bold;
+  overflow: hidden;
+  padding: 5px;
+}
+
+.route_name {
+  float: left;
+  margin-left: 25px;
+}
+
+.route_arrival {
+  float: right;
+  margin-right: 25px;
+}
+
+.clearfloat {
+  clear: both;
+}
