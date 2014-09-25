@@ -1,7 +1,9 @@
 var routes = {};
 // Replace with InfoPoint URL
-var url = "localhost";
+var url = "localhost:8080";
 var body;
+var stops = [];
+var stop_index = 0;
 
 (function($) {
     $.QueryString = (function(a) {
@@ -41,29 +43,37 @@ function getQueryString() {
 }
 
 function drawCanvas() {
-  if (typeof paper !== "undefined") {
-    paper.clear();
-  }
-
   $.get("http://" + url + "/routes/getvisibleroutes", function(route_data) {
     for (var i = 0; i < route_data.length; i++) {
       routes[route_data[i].RouteId] = route_data[i];
     }
-
-    for(var x = 0; x < stops.length; x++) {
-      addTable(stops[x]);
-    }
+    addTables();
   }, 'json');
+  setTimeout(function() {
+    stop_index = 0;
+    $('body').empty();
+    addTables();
+  }, 10000);
 }
 
-function addTable(stop) {
-  $.get("http://" + url + "/stops/get/"+stop, function(stop_info) {
-    $.get("http://" + url + "/stopdepartures/get/" + stop, function(departure_data) {
-      body.append("<h1>" + stop_info.Name + "</h1>");
+function addTables() {
+  $.get("http://" + url + "/stops/get/"+stops[stop_index], function(stop_info) {
+    $.get("http://" + url + "/stopdepartures/get/" + stops[stop_index], function(departure_data) {
+      body.append('<h1 class="animated fadeIn">' + stop_info.Name + "</h1>");
       var directions = departure_data[0].RouteDirections;
-      for (var i = 0; i < directions.length; i++) {
-        renderRow(directions[i]);
-      }
+      var i = 0;
+      var id = setInterval(function() {
+          if (i < directions.length) {
+            renderRow(directions[i]);
+            i++;
+          } else {
+            clearTimeout(id);
+            stop_index++;
+            if (stop_index < stops.length) {
+              addTables(stops);
+            }
+          }
+        }, 250);
     }, 'json');
   }, 'json');
 }
@@ -78,7 +88,7 @@ function renderRow(direction) {
         unique_ISC.push(departure.Trip.InternetServiceDesc);
         var date = moment(departure.EDT);
         body.append(
-            '<div class="route" style="background-color: #' + route.Color + '">' +
+            '<div class="route animated fadeInDown" style="background-color: #' + route.Color + '">' +
             '<div class="route_name" style="color: #' + route.TextColor + '">' +
             route.ShortName + " " + departure.Trip.InternetServiceDesc + 
             '</div>' + 
