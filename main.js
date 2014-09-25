@@ -3,7 +3,8 @@ var routes = {};
 // Replace with InfoPoint URL
 var url = "alarmpi.ddns.umass.edu:8080";
 var body;
-var stops = [];
+var stops;
+var allowed_routes = [];
 var stop_index = 0;
 var REFRESH_TIME = 30000; // 30 seconds between info reloading
 var CASCADE_SPEED = 250; // 250ms between cascading routes
@@ -30,11 +31,12 @@ $(function(){
 });
 
 function getQueryString() {
-  var query_string = $.QueryString["stops"];
+  var stop_query_string = $.QueryString["stops"];
+  var route_query_string = $.QueryString["routes"];
   // Check if a query string has been specified
-  if (typeof query_string !== "undefined") {
+  if (typeof stop_query_string !== "undefined") {
     stops = [];
-    var query_parts = query_string.split(" ");
+    var query_parts = stop_query_string.split(" ");
     for (var i = 0; i < query_parts.length; i++) {
       if (query_parts[i]) {
         stops.push(query_parts[i]);
@@ -45,6 +47,18 @@ function getQueryString() {
   if (typeof stops === "undefined" || (typeof stops !== "undefined" && stops.length == 0)) {
     stops = [64];
   }
+
+  if (typeof route_query_string !== "undefined") {
+    routes = [];
+    var query_parts = route_query_string.split(" ");
+    for (var i = 0; i < query_parts.length; i++) {
+      if (query_parts[i]) {
+        allowed_routes.push(query_parts[i]);
+      }
+    }
+  }
+
+
 }
 
 function initBoard() {
@@ -109,7 +123,8 @@ function renderRow(direction) {
     for (var i = 0; i < direction.Departures.length; i++) {
       var departure = direction.Departures[i];
       // If we haven't seen this InternetServiceDesc yet, render it
-      if ($.inArray(departure.Trip.InternetServiceDesc, unique_ISC) == -1) {
+      if ($.inArray(departure.Trip.InternetServiceDesc, unique_ISC) == -1 &&
+          (allowed_routes.length == 0 || $.inArray(route.ShortName, allowed_routes) != -1)) {
         unique_ISC.push(departure.Trip.InternetServiceDesc);
         var date = moment(departure.EDT);
         // Give that body some divs, bodies love divs
