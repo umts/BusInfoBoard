@@ -49,7 +49,7 @@ function drawCanvas() {
     }
     addTables();
   }, 'json');
-  setTimeout(function() {
+  setInterval(function() {
     stop_index = 0;
     $('body').empty();
     addTables();
