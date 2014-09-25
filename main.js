@@ -1,7 +1,7 @@
 // Javascript for parsing and displaying departure information
 var routes = {};
 // Replace with InfoPoint URL
-var url = "localhost:8080";
+var url = "alarmpi.ddns.umass.edu:8080";
 var body;
 var stops = [];
 var stop_index = 0;
