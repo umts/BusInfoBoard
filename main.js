@@ -4,6 +4,7 @@ var routes = {};
 var url = "alarmpi.ddns.umass.edu:8080";
 var body;
 var stops;
+var sort_function;
 var allowed_routes = [];
 var stop_index = 0;
 var REFRESH_TIME = 30000; // 30 seconds between info reloading
@@ -26,13 +27,12 @@ var CASCADE_SPEED = 250; // 250ms between cascading routes
 
 $(function(){
   body = $('body');
-  getQueryString();
+  parseQueryString();
   initBoard();
 });
 
-function getQueryString() {
+function parseQueryString() {
   var stop_query_string = $.QueryString["stops"];
-  var route_query_string = $.QueryString["routes"];
   // Check if a query string has been specified
   if (typeof stop_query_string !== "undefined") {
     stops = [];
@@ -48,6 +48,8 @@ function getQueryString() {
     stops = [64];
   }
 
+  var route_query_string = $.QueryString["routes"];
+
   if (typeof route_query_string !== "undefined") {
     routes = [];
     var query_parts = route_query_string.split(" ");
@@ -58,7 +60,15 @@ function getQueryString() {
     }
   }
 
-
+  var sort_query_string = $.QueryString["sort"];
+  
+  if (typeof sort_query_string !== "undefined") {
+    if (sort_query_string == "time") {
+      sort_function = function(a, b) {
+        return a.Departure.EDT < b.Departure.EDT ? -1 : 1;
+      }
+    }
+  }
 }
 
 function initBoard() {
@@ -84,13 +94,13 @@ function addTables() {
     $.get("http://" + url + "/stopdepartures/get/" + stops[stop_index], function(departure_data) {
       // Draw the header for each stop
       body.append('<h1 class="animated fadeIn">' + stop_info.Name + "</h1>");
-      var directions = departure_data[0].RouteDirections;
+      var infos = getDepartureInfo(departure_data[0].RouteDirections);
       var i = 0;
       // For that soothing cascading effect
       var id = setInterval(function() {
           // If we still have rows to render
-          if (i < directions.length) {
-            renderRow(directions[i]);
+          if (i < infos.length) {
+            renderRow(infos[i]);
             i++;
           } else { // If not, clear out the timer and move onto the next route
             clearTimeout(id);
@@ -109,37 +119,44 @@ function addTables() {
 
 // A bit of a misnomer, we will occassionally render more that one row in here,
 // as explained below
-function renderRow(direction) {
-  // Provided we have at least one departure we can look at
-  if (direction.Departures.length > 0) {
-    // This is a little tricky. There's a sort of edge case where we want to
-    // display information for multiple buses on the same route, that are doing
-    // different things. We differentiate them by using their
-    // InternetServiceDesc, which will be different. Since the departures are
-    // ordered from soonest to furthest away, we care about the first one with
-    // a unique InternetServiceDesc, and that's what we're checking here.
-    var unique_ISC = [];
-    var route = routes[direction.RouteId];
-    for (var i = 0; i < direction.Departures.length; i++) {
-      var departure = direction.Departures[i];
-      // If we haven't seen this InternetServiceDesc yet, render it
-      if ($.inArray(departure.Trip.InternetServiceDesc, unique_ISC) == -1 &&
-          (allowed_routes.length == 0 || $.inArray(route.ShortName, allowed_routes) != -1)) {
+function renderRow(info) {
+  body.append(
+      '<div class="route animated fadeInDown" style="background-color: #' + info.Route.Color + '">' +
+      '<div class="route_name" style="color: #' + info.Route.TextColor + '">' +
+      info.Route.ShortName + " " + info.Departure.Trip.InternetServiceDesc + 
+      '</div>' + 
+      '<div class="route_arrival" style="color: #' + info.Route.TextColor + '">' +
+      moment(info.Departure.EDT).fromNow(true) +
+      '</div>' + 
+      '<div class="clearfloat"></div>' +
+      '</div>'
+      );
+}
+
+function getDepartureInfo(directions) {
+  // This is a little tricky. There's a sort of edge case where we want to
+  // display information for multiple buses on the same route, that are doing
+  // different things. We differentiate them by using their
+  // InternetServiceDesc, which will be different. Since the departures are
+  // ordered from soonest to furthest away, we care about the first one with
+  // a unique InternetServiceDesc, and that's what we're checking here.
+  var unique_ISC = [];
+  departures = [];
+  for (var i = 0; i < directions.length; i++) {
+    var direction = directions[i];
+    for (var j = 0; j < direction.Departures.length; j++) {
+      var departure = direction.Departures[j];
+      if ($.inArray(departure.Trip.InternetServiceDesc, unique_ISC) == -1
+          && (allowed_routes.length == 0 || $.inArray(route.ShortName, allowed_routes) != -1)
+          && moment(departure.EDT).isAfter(Date.now())) {
         unique_ISC.push(departure.Trip.InternetServiceDesc);
-        var date = moment(departure.EDT);
-        // Give that body some divs, bodies love divs
-        body.append(
-            '<div class="route animated fadeInDown" style="background-color: #' + route.Color + '">' +
-            '<div class="route_name" style="color: #' + route.TextColor + '">' +
-            route.ShortName + " " + departure.Trip.InternetServiceDesc + 
-            '</div>' + 
-            '<div class="route_arrival" style="color: #' + route.TextColor + '">' +
-            date.fromNow(true) +
-            '</div>' + 
-            '<div class="clearfloat"></div>' +
-            '</div>'
-            );
+        departures.push({Departure: departure, Route: routes[direction.RouteId]});
       }
     }
+  }
+  if (typeof sort_function !== "undefined") {
+    return departures.sort(sort_function);
+  } else {
+    return departures;
   }
 }
