@@ -184,13 +184,14 @@ function getDepartureInfo(directions) {
   departures = [];
   for (var i = 0; i < directions.length; i++) {
     var direction = directions[i];
+    var route = routes[direction.RouteId];
     for (var j = 0; j < direction.Departures.length; j++) {
       var departure = direction.Departures[j];
       if ($.inArray(departure.Trip.InternetServiceDesc, unique_ISC) == -1
           && (allowed_routes.length == 0 || $.inArray(route.ShortName, allowed_routes) != -1)
           && moment(departure.EDT).isAfter(Date.now())) {
         unique_ISC.push(departure.Trip.InternetServiceDesc);
-        departures.push({Departure: departure, Route: routes[direction.RouteId]});
+        departures.push({Departure: departure, Route: route});
       }
     }
   }
