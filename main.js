@@ -3,6 +3,8 @@ var routes = {};
 // Replace with InfoPoint URL
 var url = "alarmpi.ddns.umass.edu:8080";
 var body;
+var refresh_id;
+var error_check_id;
 var stops;
 var sort_function;
 var allowed_routes = [];
@@ -30,6 +32,25 @@ $(function(){
   parseQueryString();
   initBoard();
 });
+
+function startErrorRoutine() {
+  stopRefreshing();
+  body.append('<div class="connectivity_note hidden">No Bus Information Available</div>');
+  $('.connectivity_note').removeClass('hidden');
+  error_check_id = setInterval(function(){
+    console.log("Checking");
+    $.ajax({
+      url: "http://" + url + "/PublicMessages/GetCurrentMessages",
+      success: function(route_data) {
+        body.empty();
+        console.log("It lives!");
+        clearInterval(error_check_id);
+        initBoard();
+      }
+    });
+  }, 5000);
+  
+}
 
 function parseQueryString() {
   var stop_query_string = $.QueryString["stops"];
@@ -74,47 +95,66 @@ function parseQueryString() {
 function initBoard() {
   // Let's start by preloading all of the route info, because when we query
   // departures, we'll only have the route ID
-  $.get("http://" + url + "/routes/getvisibleroutes", function(route_data) {
+  $.ajax({
+    url: "http://" + url + "/routes/getvisibleroutes",
+    success: function(route_data) {
     for (var i = 0; i < route_data.length; i++) {
       routes[route_data[i].RouteId] = route_data[i];
     }
     addTables();
-  }, 'json');
-  
+    startRefreshing();
+  },
+  dataType: 'json',
+  error: startErrorRoutine});
+}
+
+function startRefreshing() {
   // Refresh the board every 30 seconds
-  setInterval(function() {
-    $('body').empty();
+  refresh_id = setInterval(function() {
+    body.empty();
     addTables();
   }, REFRESH_TIME);
 }
 
+function stopRefreshing() {
+  clearInterval(refresh_id);
+}
+
 function addTables() {
   // There are two separate calls here, 
-  $.get("http://" + url + "/stops/get/"+stops[stop_index], function(stop_info) {
-    $.get("http://" + url + "/stopdepartures/get/" + stops[stop_index], function(departure_data) {
-      // Draw the header for each stop
-      body.append('<h1 class="animated fadeIn">' + stop_info.Name + "</h1>");
-      var infos = getDepartureInfo(departure_data[0].RouteDirections);
-      var i = 0;
-      // For that soothing cascading effect
-      var id = setInterval(function() {
-          // If we still have rows to render
-          if (i < infos.length) {
-            renderRow(infos[i]);
-            i++;
-          } else { // If not, clear out the timer and move onto the next route
-            clearTimeout(id);
-            stop_index++;
-            // If we run out of stops, reset our index and don't do anything
-            if (stop_index < stops.length) {
-              addTables(stops);
-            } else {
-              stop_index = 0;
-            }
-          }
-        }, CASCADE_SPEED);
-    }, 'json');
-  }, 'json');
+  $.ajax({
+    url: "http://" + url + "/stops/get/"+stops[stop_index],
+    success: function(stop_info) {
+      $.ajax({
+        url: "http://" + url + "/stopdepartures/get/" + stops[stop_index],
+        success: function(departure_data) {
+          // Draw the header for each stop
+          body.append('<h1 class="animated fadeIn">' + stop_info.Name + "</h1>");
+          var infos = getDepartureInfo(departure_data[0].RouteDirections);
+          var i = 0;
+          // For that soothing cascading effect
+          var id = setInterval(function() {
+              // If we still have rows to render
+              if (i < infos.length) {
+                renderRow(infos[i]);
+                i++;
+              } else { // If not, clear out the timer and move onto the next route
+                clearTimeout(id);
+                stop_index++;
+                // If we run out of stops, reset our index and don't do anything
+                if (stop_index < stops.length) {
+                  addTables(stops);
+                } else {
+                  stop_index = 0;
+                }
+              }
+            }, CASCADE_SPEED);
+      },
+      dataType: 'json',
+      error: startErrorRoutine});
+    },
+    dataType: 'json',
+    error: startErrorRoutine});
 }
 
 // A bit of a misnomer, we will occassionally render more that one row in here,

@@ -37,3 +37,13 @@ h1 {
 .clearfloat {
   clear: both;
 }
+
+.hidden {
+  display: none !important;
+}
+
+.connectivity_note {
+  text-align: center;
+  font-size: 5em;
+  color: white;
+}
