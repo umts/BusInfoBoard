@@ -7,6 +7,7 @@ var error_check_id;
 var stops;
 var sort_function;
 var allowed_routes = [];
+var animation_type = 'fadeInDown';
 var stop_index = 0;
 var REFRESH_TIME = 30000; // time in ms between refreshes
 var CASCADE_SPEED = 75; // time in ms which each row will take to cascade
@@ -89,6 +90,10 @@ function parseQueryString() {
       }
     }
   }
+  var animation_query_string = $.QueryString['animation'];
+  if (typeof animation_query_string !== 'undefined'){
+    animation_type = animation_query_string
+  }
 }
 
 function initBoard() {
@@ -108,7 +113,7 @@ function initBoard() {
 }
 
 function startRefreshing() {
-  // Refresh the board every 30 seconds
+  // Refresh the board every REFRESH_TIME ms
   refresh_id = setInterval(function() {
     body.empty();
     addTables();
@@ -128,10 +133,10 @@ function addTables() {
         url: url + "stopdepartures/get/" + stops[stop_index],
         success: function(departure_data) {
           // Draw the header for each stop
-          body.append('<h1 class="animated fadeIn">' + stop_info.Name + "</h1>");
+          body.append('<h1 class="animated ' + animation_type + '">' + stop_info.Name + "</h1>");
           var infos = getDepartureInfo(departure_data[0].RouteDirections);
           if (infos.length == 0){
-            body.append('<h2 class="animated fadeIn">No remaining scheduled departures.</h2>');
+            body.append('<h2 class="animated ' + animation_type + '">No remaining scheduled departures.</h2>');
           }
           var i = 0;
           // For that soothing cascading effect
@@ -163,7 +168,7 @@ function addTables() {
 // as explained below
 function renderRow(info) {
   body.append(
-      '<div class="route animated fadeInDown" style="background-color: #' + info.Route.Color + '">' +
+      '<div class="route animated ' + animation_type + '" style="background-color: #' + info.Route.Color + '">' +
       '<div class="route_name" style="color: #' + info.Route.TextColor + '">' +
       info.Route.ShortName + " " + info.Departure.Trip.InternetServiceDesc + 
       '</div>' + 
@@ -182,17 +187,21 @@ function getDepartureInfo(directions) {
   // InternetServiceDesc, which will be different. Since the departures are
   // ordered from soonest to furthest away, we care about the first one with
   // a unique InternetServiceDesc, and that's what we're checking here.
-  var unique_ISC = [];
+  var unique_ISDs = [];
   departures = [];
   for (var i = 0; i < directions.length; i++) {
     var direction = directions[i];
     var route = routes[direction.RouteId];
     for (var j = 0; j < direction.Departures.length; j++) {
       var departure = direction.Departures[j];
-      if ($.inArray(departure.Trip.InternetServiceDesc, unique_ISC) == -1
+      //If the departure has a unique InternetServiceDesc,
+      if ($.inArray(departure.Trip.InternetServiceDesc, unique_ISDs) == -1
+          //and if it's in the allowed routes,
           && (allowed_routes.length == 0 || $.inArray(route.ShortName, allowed_routes) != -1)
+          //and if it's in the future,
           && moment(departure.EDT).isAfter(Date.now())) {
-        unique_ISC.push(departure.Trip.InternetServiceDesc);
+        // then we push it to the list, and push its ISD to the unique ISDs list.
+        unique_ISDs.push(departure.Trip.InternetServiceDesc);
         departures.push({Departure: departure, Route: route});
       }
     }
