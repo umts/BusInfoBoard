@@ -1,7 +1,6 @@
 // Javascript for parsing and displaying departure information
 var routes = {};
-// Replace with InfoPoint URL
-var url = "alarmpi.ddns.umass.edu:8080";
+var url = "http://rtpis.pvta.com/InfoPoint/rest/";
 var body;
 var refresh_id;
 var error_check_id;
@@ -96,7 +95,7 @@ function initBoard() {
   // Let's start by preloading all of the route info, because when we query
   // departures, we'll only have the route ID
   $.ajax({
-    url: "http://" + url + "/routes/getvisibleroutes",
+    url: url + "/routes/getvisibleroutes",
     success: function(route_data) {
     for (var i = 0; i < route_data.length; i++) {
       routes[route_data[i].RouteId] = route_data[i];
@@ -123,10 +122,10 @@ function stopRefreshing() {
 function addTables() {
   // There are two separate calls here, 
   $.ajax({
-    url: "http://" + url + "/stops/get/"+stops[stop_index],
+    url: url + "/stops/get/"+stops[stop_index],
     success: function(stop_info) {
       $.ajax({
-        url: "http://" + url + "/stopdepartures/get/" + stops[stop_index],
+        url: url + "/stopdepartures/get/" + stops[stop_index],
         success: function(departure_data) {
           // Draw the header for each stop
           body.append('<h1 class="animated fadeIn">' + stop_info.Name + "</h1>");
