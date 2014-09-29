@@ -39,7 +39,7 @@ function startErrorRoutine() {
   error_check_id = setInterval(function(){
     console.log("Checking");
     $.ajax({
-      url: "http://" + url + "/PublicMessages/GetCurrentMessages",
+      url: url + "PublicMessages/GetCurrentMessages",
       success: function(route_data) {
         body.empty();
         console.log("It lives!");
@@ -95,7 +95,7 @@ function initBoard() {
   // Let's start by preloading all of the route info, because when we query
   // departures, we'll only have the route ID
   $.ajax({
-    url: url + "/routes/getvisibleroutes",
+    url: url + "routes/getvisibleroutes",
     success: function(route_data) {
     for (var i = 0; i < route_data.length; i++) {
       routes[route_data[i].RouteId] = route_data[i];
@@ -122,10 +122,10 @@ function stopRefreshing() {
 function addTables() {
   // There are two separate calls here, 
   $.ajax({
-    url: url + "/stops/get/"+stops[stop_index],
+    url: url + "stops/get/"+stops[stop_index],
     success: function(stop_info) {
       $.ajax({
-        url: url + "/stopdepartures/get/" + stops[stop_index],
+        url: url + "stopdepartures/get/" + stops[stop_index],
         success: function(departure_data) {
           // Draw the header for each stop
           body.append('<h1 class="animated fadeIn">' + stop_info.Name + "</h1>");
