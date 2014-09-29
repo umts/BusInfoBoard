@@ -1,6 +1,6 @@
 // Javascript for parsing and displaying departure information
 var routes = {};
-var url = "http://rtpis.pvta.com/InfoPoint/rest/";
+var url = "http://bustracker.pvta.com/InfoPoint/rest/";
 var body;
 var refresh_id;
 var error_check_id;
