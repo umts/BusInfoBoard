@@ -157,7 +157,10 @@ function addTables() {
 }
 
 // A bit of a misnomer, we will occassionally render more than one row in here,
-// as explained below
+// since there may be multiple departures on the same route that we're interested in:
+// the most common example being campus shuttle (e.g. leaving ILC going towards
+// Butterfield and going towards Southwest).
+// This will also include things like opportunity trips. (e.g. Garage via Mass Ave)
 function renderRow(info) {
   body.append(
       '<div class="route animated fadeInDown" style="background-color: #' + info.Route.Color + '">' +
