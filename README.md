@@ -35,12 +35,15 @@ Configuration is done using query stings in the request url.
 Examples
 --------
 All 7 Holyoke Transportation Center Gates:
+
 http://umts.github.io/BusInfoBoard/?stops=9098+9097+9096+9089+9088+9087+9086
 
 UMass campus shuttle at ILC and Morrill:
+
 http://umts.github.io/BusInfoBoard/?stops=64+63&routes=34+35
 
 All buses at the Academy of Music, ordered by departure time:
+
 http://umts.github.io/BusInfoBoard/?stops=261&sort=time
 
 [avail]: http://www.availtec.com/
