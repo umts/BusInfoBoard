@@ -156,7 +156,7 @@ function addTables() {
     error: startErrorRoutine});
 }
 
-// A bit of a misnomer, we will occassionally render more that one row in here,
+// A bit of a misnomer, we will occassionally render more than one row in here,
 // as explained below
 function renderRow(info) {
   body.append(
