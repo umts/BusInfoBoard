@@ -8,8 +8,8 @@ var stops;
 var sort_function;
 var allowed_routes = [];
 var stop_index = 0;
-var REFRESH_TIME = 30000; // 30 seconds between info reloading
-var CASCADE_SPEED = 250; // 250ms between cascading routes
+var REFRESH_TIME = 30000; // time in ms between refreshes
+var CASCADE_SPEED = 75; // time in ms which each row will take to cascade
 
 // Parse apart query string, conveniently tagged onto jQuery
 (function($) {
@@ -130,6 +130,9 @@ function addTables() {
           // Draw the header for each stop
           body.append('<h1 class="animated fadeIn">' + stop_info.Name + "</h1>");
           var infos = getDepartureInfo(departure_data[0].RouteDirections);
+          if (infos.length == 0){
+            body.append('<h2 class="animated fadeIn">No remaining scheduled departures.</h2>');
+          }
           var i = 0;
           // For that soothing cascading effect
           var id = setInterval(function() {

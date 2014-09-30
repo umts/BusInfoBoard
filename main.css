@@ -13,6 +13,14 @@ h1 {
   margin-left: 10px;
 }
 
+h2 {
+  color: white;
+  font-size: 3em;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: 50px;
+}
+
 .route {
   border-radius: 150px;
   margin-bottom: 10px;
