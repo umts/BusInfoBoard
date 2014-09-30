@@ -11,6 +11,7 @@ var animation_type = 'fadeInDown';
 var stop_index = 0;
 var REFRESH_TIME = 30000; // time in ms between refreshes
 var CASCADE_SPEED = 75; // time in ms which each row will take to cascade
+var FADEOUT_TIME = 2000; // the amount of time we give the fade out CSS to work
 
 // Parse apart query string, conveniently tagged onto jQuery
 (function($) {
@@ -115,8 +116,12 @@ function initBoard() {
 function startRefreshing() {
   // Refresh the board every REFRESH_TIME ms
   refresh_id = setInterval(function() {
-    body.empty();
-    addTables();
+    removeTables();
+    //since we wait FADEOUT_TIME before emptying the page,
+    //we wait this long before adding in the new tables.
+    setTimeout(function(){
+      addTables();
+    }, FADEOUT_TIME)
   }, REFRESH_TIME);
 }
 
@@ -164,8 +169,22 @@ function addTables() {
     error: startErrorRoutine});
 }
 
-// A bit of a misnomer, we will occassionally render more that one row in here,
-// as explained below
+//removes the tables in preparation to load in the new ones. fancy CSS magic.
+function removeTables(){
+  //fade out stops and their departures
+  $('h1').addClass('fadeOutDown');
+  $('.route').addClass('fadeOutDown');
+  //once we've given that FADEOUT_TIME to work, remove everything.
+  window.setTimeout(function(){
+    body.empty()
+  }, FADEOUT_TIME);
+}
+
+// A bit of a misnomer, we will occassionally render more than one row in here,
+// since there may be multiple departures on the same route that we're interested in:
+// the most common example being campus shuttle (e.g. leaving ILC going towards
+// Butterfield and going towards Southwest).
+// This will also include things like opportunity trips. (e.g. Garage via Mass Ave)
 function renderRow(info) {
   body.append(
       '<div class="route animated ' + animation_type + '" style="background-color: #' + info.Route.Color + '">' +
