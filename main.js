@@ -10,9 +10,10 @@ var allowed_routes = [];
 var start_animation_type = 'fadeInDown'; // default animate CSS for each row to be added with
 var end_animation_type = 'fadeOutDown'; // default animate CSS for everything to be removed with at once
 var stop_index = 0;
-var REFRESH_TIME = 30000; // time in ms between refreshes
+var REFRESH_TIME = 30000; // default time in ms between refreshes
+var MINIMUM_REFRESH_TIME = 5; // minimum number of seconds allowed for user input
 var CASCADE_SPEED = 75; // time in ms which each row will take to cascade
-var END_ANIMATION_TIME = 2000; // the amount of time we give the ending animate CSS to work
+var END_ANIMATION_TIME = 1500; // the amount of time we give the ending animate CSS to work
 
 // Parse apart query string, conveniently tagged onto jQuery
 (function($) {
@@ -100,6 +101,14 @@ function parseQueryString() {
   var end_animation_query_string = $.QueryString['end_animation'];
   if (typeof end_animation_query_string !== 'undefined'){
     end_animation_type = end_animation_query_string
+  }
+
+  //expected value is in seconds, we convert to ms
+  //minimum allowed is MINIMUM_REFRESH_TIME seconds
+  var interval_query_string = $.QueryString['interval'];
+  if (typeof interval_query_string !== 'undefined'){
+    user_value = parseInt(interval_query_string)
+    REFRESH_TIME = Math.max(MINIMUM_REFRESH_TIME, user_value) * 1000;
   }
 }
 
