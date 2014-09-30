@@ -1,7 +1,7 @@
 // Javascript for parsing and displaying departure information
 var routes = {};
 var url = "http://bustracker.pvta.com/InfoPoint/rest/";
-var body;
+var container;
 var refresh_id;
 var error_check_id;
 var stops;
@@ -30,22 +30,20 @@ var END_ANIMATION_TIME = 500; // the amount of time we give the ending animate C
 })(jQuery);
 
 $(function(){
-  body = $('body');
+  container = $('.pure-g');
   parseQueryString();
   initBoard();
 });
 
 function startErrorRoutine() {
   stopRefreshing();
-  body.append('<div class="connectivity_note hidden">No Bus Information Available</div>');
+  container.append('<div class="connectivity_note hidden">No Bus Information Available</div>');
   $('.connectivity_note').removeClass('hidden');
   error_check_id = setInterval(function(){
-    console.log("Checking");
     $.ajax({
       url: url + "PublicMessages/GetCurrentMessages",
       success: function(route_data) {
-        body.empty();
-        console.log("It lives!");
+        container.empty();
         clearInterval(error_check_id);
         initBoard();
       }
@@ -151,12 +149,9 @@ function addTables() {
       $.ajax({
         url: url + "stopdepartures/get/" + stops[stop_index],
         success: function(departure_data) {
-          var container, section;
-          container = $('.pure-g');
           var size = stops.length > 1 ? 2 : 1;
-          section = $('<div class="pure-u-1 pure-u-xl-1-' + size + '"></div>');
+          var section = $('<div class="pure-u-1 pure-u-xl-1-' + size + '"></div>');
           container.append(section);
-          body.append(container);
           // Draw the header for each stop
           section.append('<h1 class="animated ' + start_animation_type + '">' + stop_info.Name + "</h1>");
           var infos = getDepartureInfo(departure_data[0].RouteDirections);
