@@ -3,6 +3,7 @@ var routes = {};
 // Replace with InfoPoint URL
 var url = "alarmpi.ddns.umass.edu:8080";
 var body;
+var mode;
 var refresh_id;
 var error_check_id;
 var stops;
@@ -14,17 +15,16 @@ var CASCADE_SPEED = 250; // 250ms between cascading routes
 
 // Parse apart query string, conveniently tagged onto jQuery
 (function($) {
-    $.QueryString = (function(a) {
-        if (a == "") return {};
-        var b = {};
-        for (var i = 0; i < a.length; ++i)
-        {
-            var p=a[i].split('=');
-            if (p.length != 2) continue;
-            b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
-        }
-        return b;
-    })(window.location.search.substr(1).split('&'))
+  $.QueryString = (function(a) {
+    if (a == "") return {};
+    var b = {};
+    for (var i = 0; i < a.length; ++i) {
+      var p=a[i].split('=');
+      if (p.length != 2) continue;
+      b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+    }
+    return b;
+  })(window.location.search.substr(1).split('&'))
 })(jQuery);
 
 $(function(){
@@ -32,6 +32,10 @@ $(function(){
   parseQueryString();
   initBoard();
 });
+
+function isLandscape() {
+  return mode == "landscape";
+}
 
 function startErrorRoutine() {
   stopRefreshing();
@@ -49,7 +53,6 @@ function startErrorRoutine() {
       }
     });
   }, 5000);
-  
 }
 
 function parseQueryString() {
@@ -90,6 +93,12 @@ function parseQueryString() {
       }
     }
   }
+
+  mode = $.QueryString["mode"];
+
+  if (typeof mode === "undefined") {
+    mode = "portrait";
+  }
 }
 
 function initBoard() {
@@ -128,15 +137,30 @@ function addTables() {
       $.ajax({
         url: "http://" + url + "/stopdepartures/get/" + stops[stop_index],
         success: function(departure_data) {
+          var container, section;
+
+          if (isLandscape()) {
+            if (stop_index % 2 == 0) {
+              container = $('<div class="pure-g"></div>');
+            } else {
+              container = $('.pure-g:last')
+            }
+            section = $('<div class="pure-u-1-2"></div>');
+            container.append(section);
+            body.append(container);
+          } else {
+            container = body;
+            section = body;
+          }
           // Draw the header for each stop
-          body.append('<h1 class="animated fadeIn">' + stop_info.Name + "</h1>");
+          section.append('<h1 class="animated fadeIn">' + stop_info.Name + "</h1>");
           var infos = getDepartureInfo(departure_data[0].RouteDirections);
           var i = 0;
           // For that soothing cascading effect
           var id = setInterval(function() {
               // If we still have rows to render
               if (i < infos.length) {
-                renderRow(infos[i]);
+                renderRow(infos[i], section);
                 i++;
               } else { // If not, clear out the timer and move onto the next route
                 clearTimeout(id);
@@ -159,9 +183,9 @@ function addTables() {
 
 // A bit of a misnomer, we will occassionally render more that one row in here,
 // as explained below
-function renderRow(info) {
-  body.append(
-      '<div class="route animated fadeInDown" style="background-color: #' + info.Route.Color + '">' +
+function renderRow(info, section) {
+  section.append(
+      '<div class="route animated flipInX" style="background-color: #' + info.Route.Color + '">' +
       '<div class="route_name" style="color: #' + info.Route.TextColor + '">' +
       info.Route.ShortName + " " + info.Departure.Trip.InternetServiceDesc + 
       '</div>' + 
