@@ -7,9 +7,13 @@ var error_check_id;
 var stops;
 var sort_function;
 var allowed_routes = [];
+var start_animation_type = 'fadeInDown'; // default animate CSS for each row to be added with
+var end_animation_type = 'fadeOutDownBig'; // default animate CSS for everything to be removed with at once
 var stop_index = 0;
-var REFRESH_TIME = 30000; // time in ms between refreshes
+var REFRESH_TIME = 30000; // default time in ms between refreshes
+var MINIMUM_REFRESH_TIME = 5; // minimum number of seconds allowed for user input
 var CASCADE_SPEED = 75; // time in ms which each row will take to cascade
+var END_ANIMATION_TIME = 1500; // the amount of time we give the ending animate CSS to work
 
 // Parse apart query string, conveniently tagged onto jQuery
 (function($) {
@@ -89,6 +93,23 @@ function parseQueryString() {
       }
     }
   }
+
+  var start_animation_query_string = $.QueryString['start_animation'];
+  if (typeof start_animation_query_string !== 'undefined'){
+    start_animation_type = start_animation_query_string
+  }
+  var end_animation_query_string = $.QueryString['end_animation'];
+  if (typeof end_animation_query_string !== 'undefined'){
+    end_animation_type = end_animation_query_string
+  }
+
+  //expected value is in seconds, we convert to ms
+  //minimum allowed is MINIMUM_REFRESH_TIME seconds
+  var interval_query_string = $.QueryString['interval'];
+  if (typeof interval_query_string !== 'undefined'){
+    user_value = parseInt(interval_query_string)
+    REFRESH_TIME = Math.max(MINIMUM_REFRESH_TIME, user_value) * 1000;
+  }
 }
 
 function initBoard() {
@@ -108,10 +129,14 @@ function initBoard() {
 }
 
 function startRefreshing() {
-  // Refresh the board every 30 seconds
+  // Refresh the board every REFRESH_TIME ms
   refresh_id = setInterval(function() {
-    body.empty();
-    addTables();
+    removeTables();
+    //since we wait END_ANIMATION_TIME before emptying the page,
+    //we wait this long before adding in the new tables.
+    setTimeout(function(){
+      addTables();
+    }, END_ANIMATION_TIME)
   }, REFRESH_TIME);
 }
 
@@ -128,10 +153,10 @@ function addTables() {
         url: url + "stopdepartures/get/" + stops[stop_index],
         success: function(departure_data) {
           // Draw the header for each stop
-          body.append('<h1 class="animated fadeIn">' + stop_info.Name + "</h1>");
+          body.append('<h1 class="animated ' + start_animation_type + '">' + stop_info.Name + "</h1>");
           var infos = getDepartureInfo(departure_data[0].RouteDirections);
           if (infos.length == 0){
-            body.append('<h2 class="animated fadeIn">No remaining scheduled departures.</h2>');
+            body.append('<h2 class="animated ' + start_animation_type + '">No remaining scheduled departures.</h2>');
           }
           var i = 0;
           // For that soothing cascading effect
@@ -159,14 +184,25 @@ function addTables() {
     error: startErrorRoutine});
 }
 
+//removes the tables in preparation to load in the new ones. fancy CSS magic.
+function removeTables(){
+  //fade out stops and their departures
+  $('h1').addClass(end_animation_type);
+  $('.route').addClass(end_animation_type);
+  //once we've given that END_ANIMATION_TIME to work, remove everything.
+  window.setTimeout(function(){
+    body.empty()
+  }, END_ANIMATION_TIME);
+}
+
 // A bit of a misnomer, we will occassionally render more than one row in here,
 // since there may be multiple departures on the same route that we're interested in:
-// the most common example being campus shuttle (e.g. leaving ILC going towards
-// Butterfield and going towards Southwest).
-// This will also include things like opportunity trips. (e.g. Garage via Mass Ave)
+// the most common example being opportunity trips (e.g. Garage via Mass Ave
+// at the end of 30-3 EVE, which is on route 30 and northbound, just like North Amherst,
+// but has a different trip description).
 function renderRow(info) {
   body.append(
-      '<div class="route animated fadeInDown" style="background-color: #' + info.Route.Color + '">' +
+      '<div class="route animated ' + start_animation_type + '" style="background-color: #' + info.Route.Color + '">' +
       '<div class="route_name" style="color: #' + info.Route.TextColor + '">' +
       info.Route.ShortName + " " + info.Departure.Trip.InternetServiceDesc + 
       '</div>' + 
@@ -185,17 +221,21 @@ function getDepartureInfo(directions) {
   // InternetServiceDesc, which will be different. Since the departures are
   // ordered from soonest to furthest away, we care about the first one with
   // a unique InternetServiceDesc, and that's what we're checking here.
-  var unique_ISC = [];
+  var unique_ISDs = [];
   departures = [];
   for (var i = 0; i < directions.length; i++) {
     var direction = directions[i];
     var route = routes[direction.RouteId];
     for (var j = 0; j < direction.Departures.length; j++) {
       var departure = direction.Departures[j];
-      if ($.inArray(departure.Trip.InternetServiceDesc, unique_ISC) == -1
+      //If the departure has a unique InternetServiceDesc,
+      if ($.inArray(departure.Trip.InternetServiceDesc, unique_ISDs) == -1
+          //and if it's in the allowed routes,
           && (allowed_routes.length == 0 || $.inArray(route.ShortName, allowed_routes) != -1)
+          //and if it's in the future,
           && moment(departure.EDT).isAfter(Date.now())) {
-        unique_ISC.push(departure.Trip.InternetServiceDesc);
+        // then we push it to the list, and push its ISD to the unique ISDs list.
+        unique_ISDs.push(departure.Trip.InternetServiceDesc);
         departures.push({Departure: departure, Route: route});
       }
     }
