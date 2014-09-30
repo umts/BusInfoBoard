@@ -10,6 +10,7 @@ var allowed_routes = [];
 var stop_index = 0;
 var REFRESH_TIME = 30000; // 30 seconds between info reloading
 var CASCADE_SPEED = 250; // 250ms between cascading routes
+var FADEOUT_TIME = 2000; // the amount of time we give the fade out CSS to work
 
 // Parse apart query string, conveniently tagged onto jQuery
 (function($) {
@@ -110,8 +111,12 @@ function initBoard() {
 function startRefreshing() {
   // Refresh the board every 30 seconds
   refresh_id = setInterval(function() {
-    body.empty();
-    addTables();
+    removeTables();
+    //since we wait FADEOUT_TIME before emptying the page,
+    //we wait this long before adding in the new tables.
+    setTimeout(function(){
+      addTables();
+    }, FADEOUT_TIME)
   }, REFRESH_TIME);
 }
 
@@ -154,6 +159,17 @@ function addTables() {
     },
     dataType: 'json',
     error: startErrorRoutine});
+}
+
+//removes the tables in preparation to load in the new ones. fancy CSS magic.
+function removeTables(){
+  //fade out stops and their departures
+  $('h1').addClass('fadeOutDownBig');
+  $('.route').addClass('fadeOutDownBig');
+  //once we've given that FADEOUT_TIME to work, remove everything.
+  window.setTimeout(function(){
+    body.empty()
+  }, FADEOUT_TIME);
 }
 
 // A bit of a misnomer, we will occassionally render more than one row in here,
