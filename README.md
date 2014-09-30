@@ -31,6 +31,15 @@ Configuration is done using query stings in the request url.
 - `?sort=time` changes the order that departures are displayed to be by
   departure time. The default is by route-order as returned by the API
   server.
+- `?interval=30` specifies how frequently to update the display in
+  seconds. The default value is 30 seconds.
+- `?start_animation=someAnimation` specifies which animation to use when
+  adding route times to the page. You can choose from any of the animation
+  names available in [animate.css][animate], but it should probably be an
+  "entrance" animation; the default animation is "fadeInDown".
+- `?end_animation=someAnimation` specifies which animation to use when
+  clearing the display for refresh. This should probably be an "exit"
+  animation; the default is "fadeOut".
 
 Examples
 --------
@@ -46,7 +55,11 @@ All buses at the Academy of Music, ordered by departure time:
 
 http://umts.github.io/BusInfoBoard/?stops=261&sort=time
 
+Haigis Mall with more "flair" :trollface::
+
+http://umts.github.io/BusInfoBoard/?stops=73&interval=5&start_animation=bounceIn&end_animation=rotateOutUpRight
+
 [avail]: http://www.availtec.com/
 [umts]: http://www.umass.edu/transit/
 [pvta]: http://www.pvta.com/
-
+[animate]: http://daneden.github.io/animate.css/
