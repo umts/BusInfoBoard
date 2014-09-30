@@ -29,29 +29,11 @@ h2 {
   font-size: 3em;
   font-weight: bold;
   overflow: hidden;
-  padding: 5px;
-}
-
-.route_short_name {
-  float: left;
-  margin-left: 25px;
-}
-
-.route_long_name {
-  float: left;
-  max-width: 50%;
-  margin-left: 25px;
+  padding: 5px 25px;
 }
 
 .route_arrival {
-  float: right;
   text-align: right;
-  max-width: 30%;
-  margin-right: 25px;
-}
-
-.clearfloat {
-  clear: both;
 }
 
 .hidden {

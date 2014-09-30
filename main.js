@@ -202,14 +202,14 @@ function removeTables(){
 // but has a different trip description).
 function renderRow(info, section) {
   section.append(
-      '<div class="route animated ' + start_animation_type + '" style="background-color: #' + info.Route.Color + '">' +
-      '<div class="route_short_name" style="color: #' + info.Route.TextColor + '">' +
+      '<div class="route animated ' + start_animation_type + ' pure-g" style="background-color: #' + info.Route.Color + '">' +
+      '<div class="route_short_name pure-u-1 pure-u-xl-1-24" style="color: #' + info.Route.TextColor + '">' +
       info.Route.ShortName + " " + 
       '</div>' + 
-      '<div class="route_long_name" style="color: #' + info.Route.TextColor + '">' +
+      '<div class="route_long_name pure-u-1 pure-u-xl-18-24" style="color: #' + info.Route.TextColor + '">' +
       info.Departure.Trip.InternetServiceDesc + 
       '</div>' + 
-      '<div class="route_arrival" style="color: #' + info.Route.TextColor + '">' +
+      '<div class="route_arrival pure-u-1 pure-u-xl-5-24" style="color: #' + info.Route.TextColor + '">' +
       moment(info.Departure.EDT).fromNow(true) +
       '</div>' + 
       '<div class="clearfloat"></div>' +
