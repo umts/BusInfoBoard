@@ -8,7 +8,7 @@ var stops;
 var sort_function;
 var allowed_routes = [];
 var start_animation_type = 'fadeInDown'; // default animate CSS for each row to be added with
-var end_animation_type = 'fadeOutDown'; // default animate CSS for everything to be removed with at once
+var end_animation_type = 'fadeOutDownBig'; // default animate CSS for everything to be removed with at once
 var stop_index = 0;
 var REFRESH_TIME = 30000; // default time in ms between refreshes
 var MINIMUM_REFRESH_TIME = 5; // minimum number of seconds allowed for user input
