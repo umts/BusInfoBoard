@@ -7,11 +7,12 @@ var error_check_id;
 var stops;
 var sort_function;
 var allowed_routes = [];
-var animation_type = 'fadeInDown';
+var start_animation_type = 'fadeInDown'; // default animate CSS for each row to be added with
+var end_animation_type = 'fadeOutDown'; // default animate CSS for everything to be removed with at once
 var stop_index = 0;
 var REFRESH_TIME = 30000; // time in ms between refreshes
 var CASCADE_SPEED = 75; // time in ms which each row will take to cascade
-var FADEOUT_TIME = 2000; // the amount of time we give the fade out CSS to work
+var END_ANIMATION_TIME = 2000; // the amount of time we give the ending animate CSS to work
 
 // Parse apart query string, conveniently tagged onto jQuery
 (function($) {
@@ -91,9 +92,14 @@ function parseQueryString() {
       }
     }
   }
-  var animation_query_string = $.QueryString['animation'];
-  if (typeof animation_query_string !== 'undefined'){
-    animation_type = animation_query_string
+
+  var start_animation_query_string = $.QueryString['start_animation'];
+  if (typeof start_animation_query_string !== 'undefined'){
+    start_animation_type = start_animation_query_string
+  }
+  var end_animation_query_string = $.QueryString['end_animation'];
+  if (typeof end_animation_query_string !== 'undefined'){
+    end_animation_type = end_animation_query_string
   }
 }
 
@@ -117,11 +123,11 @@ function startRefreshing() {
   // Refresh the board every REFRESH_TIME ms
   refresh_id = setInterval(function() {
     removeTables();
-    //since we wait FADEOUT_TIME before emptying the page,
+    //since we wait END_ANIMATION_TIME before emptying the page,
     //we wait this long before adding in the new tables.
     setTimeout(function(){
       addTables();
-    }, FADEOUT_TIME)
+    }, END_ANIMATION_TIME)
   }, REFRESH_TIME);
 }
 
@@ -138,10 +144,10 @@ function addTables() {
         url: url + "stopdepartures/get/" + stops[stop_index],
         success: function(departure_data) {
           // Draw the header for each stop
-          body.append('<h1 class="animated ' + animation_type + '">' + stop_info.Name + "</h1>");
+          body.append('<h1 class="animated ' + start_animation_type + '">' + stop_info.Name + "</h1>");
           var infos = getDepartureInfo(departure_data[0].RouteDirections);
           if (infos.length == 0){
-            body.append('<h2 class="animated ' + animation_type + '">No remaining scheduled departures.</h2>');
+            body.append('<h2 class="animated ' + start_animation_type + '">No remaining scheduled departures.</h2>');
           }
           var i = 0;
           // For that soothing cascading effect
@@ -172,12 +178,12 @@ function addTables() {
 //removes the tables in preparation to load in the new ones. fancy CSS magic.
 function removeTables(){
   //fade out stops and their departures
-  $('h1').addClass('fadeOutDown');
-  $('.route').addClass('fadeOutDown');
-  //once we've given that FADEOUT_TIME to work, remove everything.
+  $('h1').addClass(end_animation_type);
+  $('.route').addClass(end_animation_type);
+  //once we've given that END_ANIMATION_TIME to work, remove everything.
   window.setTimeout(function(){
     body.empty()
-  }, FADEOUT_TIME);
+  }, END_ANIMATION_TIME);
 }
 
 // A bit of a misnomer, we will occassionally render more than one row in here,
@@ -187,7 +193,7 @@ function removeTables(){
 // This will also include things like opportunity trips. (e.g. Garage via Mass Ave)
 function renderRow(info) {
   body.append(
-      '<div class="route animated ' + animation_type + '" style="background-color: #' + info.Route.Color + '">' +
+      '<div class="route animated ' + start_animation_type + '" style="background-color: #' + info.Route.Color + '">' +
       '<div class="route_name" style="color: #' + info.Route.TextColor + '">' +
       info.Route.ShortName + " " + info.Departure.Trip.InternetServiceDesc + 
       '</div>' + 
