@@ -197,9 +197,9 @@ function removeTables(){
 
 // A bit of a misnomer, we will occassionally render more than one row in here,
 // since there may be multiple departures on the same route that we're interested in:
-// the most common example being campus shuttle (e.g. leaving ILC going towards
-// Butterfield and going towards Southwest).
-// This will also include things like opportunity trips. (e.g. Garage via Mass Ave)
+// the most common example being opportunity trips (e.g. Garage via Mass Ave
+// at the end of 30-3 EVE, which is on route 30 and northbound, just like North Amherst,
+// but has a different trip description).
 function renderRow(info) {
   body.append(
       '<div class="route animated ' + start_animation_type + '" style="background-color: #' + info.Route.Color + '">' +
