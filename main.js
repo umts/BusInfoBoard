@@ -164,8 +164,8 @@ function addTables() {
 //removes the tables in preparation to load in the new ones. fancy CSS magic.
 function removeTables(){
   //fade out stops and their departures
-  $('h1').addClass('fadeOutDown');
-  $('.route').addClass('fadeOutDown');
+  $('h1').addClass('fadeOutDownBig');
+  $('.route').addClass('fadeOutDownBig');
   //once we've given that FADEOUT_TIME to work, remove everything.
   window.setTimeout(function(){
     body.empty()
