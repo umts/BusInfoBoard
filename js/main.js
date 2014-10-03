@@ -213,16 +213,24 @@ function removeTables(){
 // at the end of 30-3 EVE, which is on route 30 and northbound, just like North Amherst,
 // but has a different trip description).
 function renderRow(info, section) {
+  var short_proportions = "col-xs-24 col-sm-2 col-md-2 col-lg-1";
+  var long_proportions = "col-xs-24 col-sm-15 col-md-15 col-lg-16";
+  var arrival_proportions = "col-xs-24 col-sm-7 col-md-7 col-lg-7";
+  if (stops.length > 1) {
+    short_proportions = "col-xs-24 col-sm-2 col-md-1 col-lg-2";
+    long_proportions = "col-xs-24 col-sm-15 col-md-16 col-lg-15";
+    arrival_proportions = "col-xs-24 col-sm-7 col-md-7 col-lg-7";
+  }
   section.append(
       '<div class="route animated ' + start_animation_type + '" style="background-color: #' + info.Route.Color + '">' +
       '<div class="row">' + 
-      '<div class="route_short_name col-xs-24 col-sm-2 col-md-1 col-lg-2 text-center-xs" style="color: #' + info.Route.TextColor + '">' +
+      '<div class="route_short_name ' + short_proportions + ' text-center-xs" style="color: #' + info.Route.TextColor + '">' +
       info.Route.ShortName + " " + 
       '</div>' + 
-      '<div class="route_long_name col-xs-24 col-sm-15 col-md-16 col-lg-15 text-center-xs" style="color: #' + info.Route.TextColor + '">' +
+      '<div class="route_long_name ' + long_proportions + ' text-center-xs" style="color: #' + info.Route.TextColor + '">' +
       info.Departure.Trip.InternetServiceDesc + 
       '</div>' + 
-      '<div class="route_arrival col-xs-24 col-sm-7 col-md-7 col-lg-7 text-center-xs" style="color: #' + info.Route.TextColor + '">' +
+      '<div class="route_arrival ' + arrival_proportions + ' text-center-xs" style="color: #' + info.Route.TextColor + '">' +
       moment(info.Departure.EDT).fromNow(true) +
       '</div>'+ 
       '</div>'+ 
