@@ -30,7 +30,7 @@ var END_ANIMATION_TIME = 500; // the amount of time we give the ending animate C
 })(jQuery);
 
 $(function(){
-  container = $('.pure-g');
+  container = $('.container-fluid');
   parseQueryString();
   initBoard();
 });
@@ -142,24 +142,36 @@ function stopRefreshing() {
 }
 
 function addTables() {
+  var row, section;
+  var size_class = "";
+  if (stops.length > 1) {
+    size_class = "col-lg-12";
+  }
   // There are two separate calls here, 
   $.ajax({
     url: url + "stops/get/"+stops[stop_index],
     success: function(stop_info) {
+      if (stop_index % 2 == 0) {
+        row = $('<div class="row route-holder"></div>');
+      } else {
+        row = $('.route-holder:last');
+      }
+      section = $('<div class="col-xs-24 ' + size_class + '"></div>"');
+      row.append(section);
+      if (stop_index % 2 == 0) {
+        container.append(row);
+      }
       $.ajax({
         url: url + "stopdepartures/get/" + stops[stop_index],
         success: function(departure_data) {
-          var size = stops.length > 1 ? 2 : 1;
-          var section = $('<div class="pure-u-1 pure-u-xl-1-' + size + '"></div>');
-          container.append(section);
+          
           // Draw the header for each stop
           section.append('<h1 class="animated ' + start_animation_type + '">' + stop_info.Name + "</h1>");
           var infos = getDepartureInfo(departure_data[0].RouteDirections);
           if (infos.length == 0){
             section.append('<h2 class="animated ' + start_animation_type + '">No remaining scheduled departures.</h2>');
           }
-          var i = 0;
-          // For that soothing cascading effect
+          var i = 0; // For that soothing cascading effect
           var id = setInterval(function() {
               // If we still have rows to render
               if (i < infos.length) {
@@ -191,7 +203,7 @@ function removeTables(){
   $('.route').addClass(end_animation_type);
   //once we've given that END_ANIMATION_TIME to work, remove everything.
   window.setTimeout(function(){
-    $('.pure-g').empty()
+    container.empty()
   }, END_ANIMATION_TIME);
 }
 
@@ -202,17 +214,18 @@ function removeTables(){
 // but has a different trip description).
 function renderRow(info, section) {
   section.append(
-      '<div class="route animated ' + start_animation_type + ' pure-g" style="background-color: #' + info.Route.Color + '">' +
-      '<div class="route_short_name pure-u-1 pure-u-xl-1-24" style="color: #' + info.Route.TextColor + '">' +
+      '<div class="route animated ' + start_animation_type + '" style="background-color: #' + info.Route.Color + '">' +
+      '<div class="row">' + 
+      '<div class="route_short_name col-xs-24 col-sm-2 col-md-1 col-lg-2 text-center-xs" style="color: #' + info.Route.TextColor + '">' +
       info.Route.ShortName + " " + 
       '</div>' + 
-      '<div class="route_long_name pure-u-1 pure-u-xl-18-24" style="color: #' + info.Route.TextColor + '">' +
+      '<div class="route_long_name col-xs-24 col-sm-15 col-md-16 col-lg-15 text-center-xs" style="color: #' + info.Route.TextColor + '">' +
       info.Departure.Trip.InternetServiceDesc + 
       '</div>' + 
-      '<div class="route_arrival pure-u-1 pure-u-xl-5-24" style="color: #' + info.Route.TextColor + '">' +
+      '<div class="route_arrival col-xs-24 col-sm-7 col-md-7 col-lg-7 text-center-xs" style="color: #' + info.Route.TextColor + '">' +
       moment(info.Departure.EDT).fromNow(true) +
-      '</div>' + 
-      '<div class="clearfloat"></div>' +
+      '</div>'+ 
+      '</div>'+ 
       '</div>'
       );
 }

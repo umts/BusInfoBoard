@@ -1,6 +1,4 @@
 html, body {
-  margin: 0;
-  padding: 0;
   background-color: black;
   font-family: 'Open Sans', sans-serif;
 }
@@ -10,7 +8,6 @@ h1 {
   font-size: 4em;
   margin-top: 25px;
   margin-bottom: 25px;
-  margin-left: 10px;
 }
 
 h2 {
@@ -18,18 +15,25 @@ h2 {
   font-size: 3em;
   margin-top: 20px;
   margin-bottom: 20px;
-  margin-left: 50px;
 }
 
 .route {
   border-radius: 10px;
   margin-bottom: 10px;
-  margin-left: 5px;
-  margin-right: 5px;
   font-size: 3em;
   font-weight: bold;
   overflow: hidden;
-  padding: 5px 25px;
+}
+
+
+@media (min-width: 900px) {
+  .route_long_name {
+    margin-right: -40px;
+  }
+  
+  .route_short_name {
+    margin-left: 20px;
+  }
 }
 
 .route_arrival {
@@ -44,4 +48,10 @@ h2 {
   text-align: center;
   font-size: 5em;
   color: white;
+}
+
+@media (max-width: 900px) {
+  .text-center-xs {
+    text-align: center;
+  }
 }
