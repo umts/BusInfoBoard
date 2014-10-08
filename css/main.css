@@ -54,4 +54,14 @@ h2 {
   .text-center-xs {
     text-align: center;
   }
+
+  .route {
+    font-size: 1.5em;
+  }
+
+  h1 {
+    font-size: 2em;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
 }
