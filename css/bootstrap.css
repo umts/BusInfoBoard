@@ -5,8 +5,8 @@
  */
 
 /*!
- * Generated using the Bootstrap Customizer (http://getbootstrap.com/customize/?id=3b1df0f2d082db2defdb)
- * Config saved to config.json and https://gist.github.com/3b1df0f2d082db2defdb
+ * Generated using the Bootstrap Customizer (http://getbootstrap.com/customize/?id=e13680a0dfdf03564526)
+ * Config saved to config.json and https://gist.github.com/e13680a0dfdf03564526
  */
 /*! normalize.css v3.0.1 | MIT License | git.io/normalize */
 html {
@@ -305,7 +305,7 @@ hr {
     width: 970px;
   }
 }
-@media (min-width: 2000px) {
+@media (min-width: 1920px) {
   .container {
     width: 1170px;
   }
@@ -1230,7 +1230,7 @@ hr {
     margin-left: 0%;
   }
 }
-@media (min-width: 2000px) {
+@media (min-width: 1920px) {
   .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-13, .col-lg-14, .col-lg-15, .col-lg-16, .col-lg-17, .col-lg-18, .col-lg-19, .col-lg-20, .col-lg-21, .col-lg-22, .col-lg-23, .col-lg-24 {
     float: left;
   }
@@ -1668,7 +1668,7 @@ hr {
     display: inline-block !important;
   }
 }
-@media (min-width: 1600px) and (max-width: 1999px) {
+@media (min-width: 1600px) and (max-width: 1919px) {
   .visible-md {
     display: block !important;
   }
@@ -1683,22 +1683,22 @@ hr {
     display: table-cell !important;
   }
 }
-@media (min-width: 1600px) and (max-width: 1999px) {
+@media (min-width: 1600px) and (max-width: 1919px) {
   .visible-md-block {
     display: block !important;
   }
 }
-@media (min-width: 1600px) and (max-width: 1999px) {
+@media (min-width: 1600px) and (max-width: 1919px) {
   .visible-md-inline {
     display: inline !important;
   }
 }
-@media (min-width: 1600px) and (max-width: 1999px) {
+@media (min-width: 1600px) and (max-width: 1919px) {
   .visible-md-inline-block {
     display: inline-block !important;
   }
 }
-@media (min-width: 2000px) {
+@media (min-width: 1920px) {
   .visible-lg {
     display: block !important;
   }
@@ -1713,17 +1713,17 @@ hr {
     display: table-cell !important;
   }
 }
-@media (min-width: 2000px) {
+@media (min-width: 1920px) {
   .visible-lg-block {
     display: block !important;
   }
 }
-@media (min-width: 2000px) {
+@media (min-width: 1920px) {
   .visible-lg-inline {
     display: inline !important;
   }
 }
-@media (min-width: 2000px) {
+@media (min-width: 1920px) {
   .visible-lg-inline-block {
     display: inline-block !important;
   }
@@ -1738,12 +1738,12 @@ hr {
     display: none !important;
   }
 }
-@media (min-width: 1600px) and (max-width: 1999px) {
+@media (min-width: 1600px) and (max-width: 1919px) {
   .hidden-md {
     display: none !important;
   }
 }
-@media (min-width: 2000px) {
+@media (min-width: 1920px) {
   .hidden-lg {
     display: none !important;
   }
