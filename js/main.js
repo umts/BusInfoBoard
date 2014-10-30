@@ -3,7 +3,6 @@ var routes = {};
 var url = "http://bustracker.pvta.com/InfoPoint/rest/";
 var container;
 var refresh_id;
-var error_check_id;
 var stops;
 var sort_function;
 var allowed_routes = [];
@@ -37,18 +36,19 @@ $(function(){
 
 function startErrorRoutine() {
   stopRefreshing();
-  container.append('<div class="connectivity_note hidden">No Bus Information Available</div>');
-  $('.connectivity_note').removeClass('hidden');
-  error_check_id = setInterval(function(){
-    $.ajax({
-      url: url + "PublicMessages/GetCurrentMessages",
-      success: function(route_data) {
-        container.empty();
-        clearInterval(error_check_id);
-        initBoard();
-      }
-    });
-  }, 5000);
+  if (container.find('.connectivity_note').length == 0){
+    container.append('<div class="connectivity_note">No Bus Information Available</div>');
+  }
+  $.ajax({
+    url: url + "PublicMessages/GetCurrentMessages",
+    success: function(route_data) {
+      container.empty();
+      initBoard();
+    },
+    error: function(){
+      setTimeout(function(){startErrorRoutine()}, 5000)
+    }
+  });
 }
 
 function parseQueryString() {
@@ -98,6 +98,11 @@ function parseQueryString() {
   var end_animation_query_string = $.QueryString['end_animation'];
   if (typeof end_animation_query_string !== 'undefined'){
     end_animation_type = end_animation_query_string
+  }
+
+  //if there are no animations specified, don't allow time for them to execute
+  if (start_animation_type == 'none' && end_animation_type == 'none'){
+    END_ANIMATION_TIME = 0
   }
 
   //expected value is in seconds, we convert to ms
