@@ -10,10 +10,14 @@ var excluded_trips = [];
 var start_animation_type = 'fadeInDown'; // default animate CSS for each row to be added with
 var end_animation_type = 'fadeOut'; // default animate CSS for everything to be removed with at once
 var stop_index = 0;
+var work_day_start = 0;
 var REFRESH_TIME = 30000; // default time in ms between refreshes
 var MINIMUM_REFRESH_TIME = 5; // minimum number of seconds allowed for user input
 var CASCADE_SPEED = 75; // time in ms which each row will take to cascade
 var END_ANIMATION_TIME = 500; // the amount of time we give the ending animate CSS to work
+// The timezone at the beginning of the current day, used for making sure ETAs don't become
+// incorrect when switching between DST and...not DST.
+var dst_at_start;
 
 function QueryStringAsObject() {
   var pairs = location.search.slice(1).split('&');
@@ -122,6 +126,11 @@ function parseQueryString() {
       }
     }
   }
+
+  var work_day_start_string = query.work_day_start;
+  if (typeof work_day_start_string !== "undefined") {
+    work_day_start = parseInt(work_day_start_string) % 24;
+  }
 }
 
 function initBoard() {
@@ -157,6 +166,9 @@ function stopRefreshing() {
 }
 
 function addTables() {
+  var current = moment();
+  dst_at_start = moment([current.year(), current.month(), current.date(), work_day_start]).isDST();
+
   var row, section;
   var size_class = "";
   if (stops.length > 1) {
@@ -217,7 +229,7 @@ function removeTables(){
   $('h1').addClass(end_animation_type);
   $('.route').addClass(end_animation_type);
   //once we've given that END_ANIMATION_TIME to work, remove everything.
-  window.setTimeout(function(){
+  setTimeout(function(){
     container.empty()
   }, END_ANIMATION_TIME);
 }
@@ -236,6 +248,18 @@ function renderRow(info, section) {
     long_proportions = "col-xs-24 col-sm-15 col-md-16 col-lg-15";
     arrival_proportions = "col-xs-24 col-sm-7 col-md-7 col-lg-7";
   }
+  var offset = 0;
+  // If we aren't in the same timezone as we were this morning
+  if (dst_at_start != moment().isDST()) {
+    // If the day started in DST and isn't any more, that means that the clock
+    // has moved back an hour from where we want it to be, and we need to up it
+    // an hour to display the correct relative times. 
+    if (dst_at_start) {
+      offset = 1;
+    } else {
+      offset = -1;
+    }
+  }
   section.append(
       '<div class="route animated ' + start_animation_type + '" style="background-color: #' + info.Route.Color + '">' +
       '<div class="row">' + 
@@ -246,7 +270,7 @@ function renderRow(info, section) {
       info.Departure.Trip.InternetServiceDesc + 
       '</div>' + 
       '<div class="route_arrival ' + arrival_proportions + ' text-center-xs" style="color: #' + info.Route.TextColor + '">' +
-      moment(info.Departure.EDT).fromNow(true) +
+        moment(info.Departure.EDT).from(moment().add(offset, 'hours'), true) +
       '</div>'+ 
       '</div>'+ 
       '</div>'
