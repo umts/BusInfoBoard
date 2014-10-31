@@ -28,6 +28,9 @@ Configuration is done using query stings in the request url.
   like to see information for. The list is plus ("+") separated.
 - `?routes=B43+30` specifies a subset of routes that you would like to
   see information for. This list is also plus ("+") separated.
+- `?excluded_trips=Bus%20Garage%20via%20Mass%20Ave+Bus%20Garage%20via%20Compsci`
+  specifies a subset of InteretServiceDesc that you would not like to see
+  information for. This list is also plus ("+") separated.
 - `?sort=time` changes the order that departures are displayed to be by
   departure time. The default is by route-order as returned by the API
   server.
