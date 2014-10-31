@@ -3,9 +3,10 @@ var routes = {};
 var url = "http://bustracker.pvta.com/InfoPoint/rest/";
 var container;
 var refresh_id;
-var stops;
 var sort_function;
+var stops = [];
 var allowed_routes = [];
+var excluded_trips = [];
 var start_animation_type = 'fadeInDown'; // default animate CSS for each row to be added with
 var end_animation_type = 'fadeOut'; // default animate CSS for everything to be removed with at once
 var stop_index = 0;
@@ -14,19 +15,17 @@ var MINIMUM_REFRESH_TIME = 5; // minimum number of seconds allowed for user inpu
 var CASCADE_SPEED = 75; // time in ms which each row will take to cascade
 var END_ANIMATION_TIME = 500; // the amount of time we give the ending animate CSS to work
 
-// Parse apart query string, conveniently tagged onto jQuery
-(function($) {
-  $.QueryString = (function(a) {
-    if (a == "") return {};
-    var b = {};
-    for (var i = 0; i < a.length; ++i) {
-      var p=a[i].split('=');
-      if (p.length != 2) continue;
-      b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
-    }
-    return b;
-  })(window.location.search.substr(1).split('&'))
-})(jQuery);
+function QueryStringAsObject() {
+  var pairs = location.search.slice(1).split('&');
+  
+  var result = {};
+  for(var i = 0; i < pairs.length; i++) {
+      var pair = pairs[i].split('=');
+      result[pair[0]] = decodeURIComponent(pair[1] || '');
+  }
+
+  return result;
+}
 
 $(function(){
   container = $('.container-fluid');
@@ -52,11 +51,11 @@ function startErrorRoutine() {
 }
 
 function parseQueryString() {
-  var stop_query_string = $.QueryString["stops"];
+  var query = QueryStringAsObject();
+  var stop_query_string = query.stops;
   // Check if a query string has been specified
   if (typeof stop_query_string !== "undefined") {
-    stops = [];
-    var query_parts = stop_query_string.split(" ");
+    var query_parts = stop_query_string.split("+");
     for (var i = 0; i < query_parts.length; i++) {
       if (query_parts[i]) {
         stops.push(query_parts[i]);
@@ -64,15 +63,15 @@ function parseQueryString() {
     }
   }
   // If they didn't enter any stops, or they screwed up, default to stop ID 64, the Integrative Learning Center
-  if (typeof stops === "undefined" || (typeof stops !== "undefined" && stops.length == 0)) {
+  if (stops.length == 0) {
     stops = [64];
   }
 
-  var route_query_string = $.QueryString["routes"];
+  var route_query_string = query.routes;
 
   if (typeof route_query_string !== "undefined") {
     routes = [];
-    var query_parts = route_query_string.split(" ");
+    var query_parts = route_query_string.split("+");
     for (var i = 0; i < query_parts.length; i++) {
       if (query_parts[i]) {
         allowed_routes.push(query_parts[i]);
@@ -80,7 +79,7 @@ function parseQueryString() {
     }
   }
 
-  var sort_query_string = $.QueryString["sort"];
+  var sort_query_string = query.sort;
   
   if (typeof sort_query_string !== "undefined") {
     if (sort_query_string == "time") {
@@ -90,12 +89,12 @@ function parseQueryString() {
     }
   }
 
-  var start_animation_query_string = $.QueryString['start_animation'];
+  var start_animation_query_string = query.start_animation;
   if (typeof start_animation_query_string !== 'undefined'){
     start_animation_type = start_animation_query_string
   }
 
-  var end_animation_query_string = $.QueryString['end_animation'];
+  var end_animation_query_string = query.end_animation;
   if (typeof end_animation_query_string !== 'undefined'){
     end_animation_type = end_animation_query_string
   }
@@ -107,10 +106,21 @@ function parseQueryString() {
 
   //expected value is in seconds, we convert to ms
   //minimum allowed is MINIMUM_REFRESH_TIME seconds
-  var interval_query_string = $.QueryString['interval'];
+  var interval_query_string = query.interval;
   if (typeof interval_query_string !== 'undefined'){
     user_value = parseInt(interval_query_string)
     REFRESH_TIME = Math.max(MINIMUM_REFRESH_TIME, user_value) * 1000;
+  }
+
+  var excluded_query_string = query.excluded_trips;
+  // Check if a query string has been specified
+  if (typeof excluded_query_string !== "undefined") {
+    var query_parts = excluded_query_string.split("+");
+    for (var i = 0; i < query_parts.length; i++) {
+      if (query_parts[i]) {
+        excluded_trips.push(query_parts[i]);
+      }
+    }
   }
 }
 
@@ -261,6 +271,8 @@ function getDepartureInfo(directions) {
       if ($.inArray(departure.Trip.InternetServiceDesc, unique_ISDs) == -1
           //and if it's in the allowed routes,
           && (allowed_routes.length == 0 || $.inArray(route.ShortName, allowed_routes) != -1)
+          //and if it's not in the excluded trips
+          && (excluded_trips.length == 0 || $.inArray(departure.Trip.InternetServiceDesc, excluded_trips) == -1)
           //and if it's in the future,
           && moment(departure.EDT).isAfter(Date.now())) {
         // then we push it to the list, and push its ISD to the unique ISDs list.
