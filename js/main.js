@@ -167,7 +167,12 @@ function stopRefreshing() {
 
 function addTables() {
   var current = moment();
-  dst_at_start = moment([current.year(), current.month(), current.date(), work_day_start]).isDST();
+  // Is it still "yesterday" as far as the transit agency is concerned
+  if (current.hour() <= work_day_start) {
+    dst_at_start = moment([current.year(), current.month(), current.date(), work_day_start]).subtract(1, "days").isDST();
+  } else {
+    dst_at_start = moment([current.year(), current.month(), current.date(), work_day_start]).isDST();
+  }
 
   var row, section;
   var size_class = "";
