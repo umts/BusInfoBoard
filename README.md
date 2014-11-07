@@ -27,15 +27,19 @@ Configuration is done using query stings in the request url.
 - `?stops=1+2+3` specifies the list of stops by stop id that you would
   like to see information for. The list is plus ("+") separated.
 - `?routes=B43+30` specifies a subset of routes that you would like to
-  see information for. This list is also plus ("+") separated.
+  see information for. This list is also plus ("+") separated. If no
+  routes are specified, then the page displays all routes.
 - `?excluded_trips=Bus%20Garage%20via%20Mass%20Ave+Bus%20Garage%20via%20Compsci`
-  specifies a subset of InteretServiceDesc that you would not like to see
+  specifies a subset of InternetServiceDesc that you would not like to see
   information for. This list is also plus ("+") separated.
 - `?sort=time` changes the order that departures are displayed to be by
   departure time. The default is by route-order as returned by the API
   server.
 - `?interval=30` specifies how frequently to update the display in
   seconds. The default value is 30 seconds.
+- `?work_day_start=4` specifies the hour on which the agency's service
+  day changes. This is mostly used in dealing with DST changes, and as
+  such, you should avoid hours less than 3.  The default is 4.
 - `?start_animation=someAnimation` specifies which animation to use when
   adding route times to the page. You can choose from any of the animation
   names available in [animate.css][animate], but it should probably be an

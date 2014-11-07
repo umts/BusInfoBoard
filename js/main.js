@@ -10,7 +10,7 @@ var excluded_trips = [];
 var start_animation_type = 'fadeInDown'; // default animate CSS for each row to be added with
 var end_animation_type = 'fadeOut'; // default animate CSS for everything to be removed with at once
 var stop_index = 0;
-var work_day_start = 0;
+var work_day_start = 4;
 var REFRESH_TIME = 30000; // default time in ms between refreshes
 var MINIMUM_REFRESH_TIME = 5; // minimum number of seconds allowed for user input
 var CASCADE_SPEED = 75; // time in ms which each row will take to cascade
@@ -167,7 +167,12 @@ function stopRefreshing() {
 
 function addTables() {
   var current = moment();
-  dst_at_start = moment([current.year(), current.month(), current.date(), work_day_start]).isDST();
+  // Is it still "yesterday" as far as the transit agency is concerned
+  if (current.hour() <= work_day_start) {
+    dst_at_start = moment([current.year(), current.month(), current.date(), work_day_start]).subtract(1, "days").isDST();
+  } else {
+    dst_at_start = moment([current.year(), current.month(), current.date(), work_day_start]).isDST();
+  }
 
   var row, section;
   var size_class = "";
