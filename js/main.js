@@ -12,10 +12,10 @@ var options =
   excluded_trips: [],
   start_animation: 'fadeInDown',  // default animate CSS for each row to be added with
   end_animation: 'fadeOut',       // default animate CSS for everything to be removed with at once
-  work_day_start: 4,
-  interval: 30000, // default time in ms between refreshes
-  title: "",
-  sort: "route"
+  work_day_start: 4,              // default time a new transit day starts
+  interval: 30000,                // default time in ms between refreshes
+  title: "",                      // title to display at top of page
+  sort: "route"                   // default way to sort departures
 }
 
 var container;
@@ -75,6 +75,8 @@ function updateOptions() {
       url: config_url,
       dataType: 'json',
       success: function(new_options) {
+        // Copy all attributes from new_options to options, replacing existing
+        // parameters with the new ones
         $.extend(options, new_options);
       },
       async: false,
