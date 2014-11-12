@@ -3,6 +3,7 @@ var routes = {};
 var url = "http://bustracker.pvta.com/InfoPoint/rest/";
 var container;
 var refresh_id;
+var page_title;
 var sort_function;
 var stops = [];
 var allowed_routes = [];
@@ -32,13 +33,15 @@ function QueryStringAsObject() {
 }
 
 $(function(){
-  container = $('.container-fluid');
+  container = $('.main-content');
   parseQueryString();
+  initTitle();
   initBoard();
 });
 
 function startErrorRoutine() {
   stopRefreshing();
+  // We don't have a connectivity notice into the DOM at the moment
   if (container.find('.connectivity_note').length == 0){
     container.append('<div class="connectivity_note">No Bus Information Available</div>');
   }
@@ -130,6 +133,17 @@ function parseQueryString() {
   var work_day_start_string = query.work_day_start;
   if (typeof work_day_start_string !== "undefined") {
     work_day_start = parseInt(work_day_start_string) % 24;
+  }
+
+  var title_string = query.title;
+  if (typeof title_string !== "undefined") {
+    page_title = title_string;
+  }
+}
+
+function initTitle() {
+  if (typeof page_title !== "undefined") {
+    $('body').prepend('<h1 class="title">' + page_title + '</h1>');
   }
 }
 
