@@ -22,8 +22,12 @@ of InfoPoint.
 
 Configuration
 =============
-Configuration is done using query stings in the request url.
+Configuration can be done in two ways: by using query strings in the request
+url, or by passing a url where a configuration JSON file lives. If both methods
+are used, query string parameters take precedence.
 
+Query String
+------------
 - `?stops=1+2+3` specifies the list of stops by stop id that you would
   like to see information for. The list is plus ("+") separated.
 - `?routes=B43+30` specifies a subset of routes that you would like to
@@ -49,6 +53,20 @@ Configuration is done using query stings in the request url.
   animation; the default is "fadeOut".
 - `?title=Bus%20Departures` specifies what title should appear at the top of
   the page, if any
+
+Config URL
+----------
+All of the same parameters can be passed via config URL. The first step is to
+set the `config_url` variable in `main.js` to point to a JSON-formatted configuration
+file. For example:
+
+```json
+{
+  "routes": ["B43", "30"],
+  "interval": 30,
+  "excluded_trips": ["Bus Garage via Mass Ave", "Bus Garage via Compsci"]
+}
+```
 
 Examples
 --------
