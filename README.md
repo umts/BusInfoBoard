@@ -47,6 +47,8 @@ Configuration is done using query stings in the request url.
 - `?end_animation=someAnimation` specifies which animation to use when
   clearing the display for refresh. This should probably be an "exit"
   animation; the default is "fadeOut".
+- `?title=Bus%20Departures` specifies what title should appear at the top of
+  the page, if any
 
 Examples
 --------
