@@ -1,22 +1,26 @@
 // Javascript for parsing and displaying departure information
 var routes = {};
 
-var config_url = "http://localhost:8000/config.json";
+// Specify a URL here to load settings first from a configuration file
+var config_url;
 
 var options =
 {
   url: "http://bustracker.pvta.com/InfoPoint/rest/",
   stops: [],
-  allowed_routes: [],
+  routes: [],
   excluded_trips: [],
-  start_animation_type: 'fadeInDown',  // default animate CSS for each row to be added with
-  end_animation_type: 'fadeOut',       // default animate CSS for everything to be removed with at once
+  start_animation: 'fadeInDown',  // default animate CSS for each row to be added with
+  end_animation: 'fadeOut',       // default animate CSS for everything to be removed with at once
   work_day_start: 4,
-  refresh_time: 30000, // default time in ms between refreshes
+  interval: 30000, // default time in ms between refreshes
+  title: "",
+  sort: "route"
 }
+
 var container;
-var refresh_id;
 var sort_function;
+var refresh_id;
 var stop_index = 0;
 
 var MINIMUM_REFRESH_TIME = 5; // minimum number of seconds allowed for user input
@@ -40,13 +44,15 @@ function QueryStringAsObject() {
 }
 
 $(function(){
-  container = $('.container-fluid');
+  container = $('.main-content');
   updateOptions();
+  initTitle();
   initBoard();
 });
 
 function startErrorRoutine() {
   stopRefreshing();
+  // We don't have a connectivity notice into the DOM at the moment
   if (container.find('.connectivity_note').length == 0){
     container.append('<div class="connectivity_note">No Bus Information Available</div>');
   }
@@ -99,7 +105,7 @@ function updateOptions() {
     var query_parts = route_query_string.split("+");
     for (var i = 0; i < query_parts.length; i++) {
       if (query_parts[i]) {
-        options.allowed_routes.push(query_parts[i]);
+        options.routes.push(query_parts[i]);
       }
     }
   }
@@ -107,25 +113,31 @@ function updateOptions() {
   var sort_query_string = query.sort;
   
   if (typeof sort_query_string !== "undefined") {
-    if (sort_query_string == "time") {
-      sort_function = function(a, b) {
-        return a.Departure.EDT < b.Departure.EDT ? -1 : 1;
-      }
+    options.sort = sort_query_string;
+  }
+
+  if (options.sort == "time") {
+    sort_function = function(a, b) {
+      return a.Departure.EDT < b.Departure.EDT ? -1 : 1;
+    }
+  } else {
+    sort_function = function(a, b) {
+      return a.Route.ShortName > b.Route.ShortName;
     }
   }
 
   var start_animation_query_string = query.start_animation;
   if (typeof start_animation_query_string !== 'undefined'){
-    options.start_animation_type = start_animation_query_string
+    options.start_animation = start_animation_query_string
   }
 
   var end_animation_query_string = query.end_animation;
   if (typeof end_animation_query_string !== 'undefined'){
-    options.end_animation_type = end_animation_query_string
+    options.end_animation = end_animation_query_string
   }
 
   //if there are no animations specified, don't allow time for them to execute
-  if (options.start_animation_type == 'none' && options.end_animation_type == 'none'){
+  if (options.start_animation == 'none' && options.end_animation == 'none'){
     END_ANIMATION_TIME = 0
   }
 
@@ -133,7 +145,7 @@ function updateOptions() {
   //minimum allowed is MINIMUM_REFRESH_TIME seconds
   var interval_query_string = query.interval;
   if (typeof interval_query_string !== 'undefined'){
-    options.refresh_time = Math.max(MINIMUM_REFRESH_TIME, parseInt(interval_query_string)) * 1000;
+    options.interval = Math.max(MINIMUM_REFRESH_TIME, parseInt(interval_query_string)) * 1000;
   }
 
   var excluded_query_string = query.excluded_trips;
@@ -150,6 +162,17 @@ function updateOptions() {
   var work_day_start_string = query.work_day_start;
   if (typeof work_day_start_string !== "undefined") {
     options.work_day_start = parseInt(work_day_start_string) % 24;
+  }
+
+  var title_string = query.title;
+  if (typeof title_string !== "undefined") {
+    options.title = title_string;
+  }
+}
+
+function initTitle() {
+  if (typeof options.title !== "undefined" && options.title != "") {
+    $('body').prepend('<h1 class="title">' + options.title + '</h1>');
   }
 }
 
@@ -178,7 +201,7 @@ function startRefreshing() {
     setTimeout(function(){
       addTables();
     }, END_ANIMATION_TIME)
-  }, options.refresh_time);
+  }, options.interval);
 }
 
 function stopRefreshing() {
@@ -218,10 +241,10 @@ function addTables() {
         success: function(departure_data) {
           
           // Draw the header for each stop
-          section.append('<h1 class="animated ' + options.start_animation_type + '">' + stop_info.Name + "</h1>");
+          section.append('<h1 class="animated ' + options.start_animation + '">' + stop_info.Name + "</h1>");
           var infos = getDepartureInfo(departure_data[0].RouteDirections);
           if (infos.length == 0){
-            section.append('<h2 class="animated ' + options.start_animation_type + '">No remaining scheduled departures.</h2>');
+            section.append('<h2 class="animated ' + options.start_animation + '">No remaining scheduled departures.</h2>');
           }
           var i = 0; // For that soothing cascading effect
           var id = setInterval(function() {
@@ -251,8 +274,8 @@ function addTables() {
 //removes the tables in preparation to load in the new ones. fancy CSS magic.
 function removeTables(){
   //fade out stops and their departures
-  $('h1').addClass(options.end_animation_type);
-  $('.route').addClass(options.end_animation_type);
+  $('h1').addClass(options.end_animation);
+  $('.route').addClass(options.end_animation);
   //once we've given that END_ANIMATION_TIME to work, remove everything.
   setTimeout(function(){
     container.empty()
@@ -286,7 +309,7 @@ function renderRow(info, section) {
     }
   }
   section.append(
-      '<div class="route animated ' + options.start_animation_type + '" style="background-color: #' + info.Route.Color + '">' +
+      '<div class="route animated ' + options.start_animation + '" style="background-color: #' + info.Route.Color + '">' +
       '<div class="row">' + 
       '<div class="route_short_name ' + short_proportions + ' text-center-xs" style="color: #' + info.Route.TextColor + '">' +
       info.Route.ShortName + " " + 
@@ -319,7 +342,7 @@ function getDepartureInfo(directions) {
       //If the departure has a unique InternetServiceDesc,
       if ($.inArray(departure.Trip.InternetServiceDesc, unique_ISDs) == -1
           //and if it's in the allowed routes,
-          && (options.allowed_routes.length == 0 || $.inArray(route.ShortName, options.allowed_routes) != -1)
+          && (options.routes.length == 0 || $.inArray(route.ShortName, options.routes) != -1)
           //and if it's not in the excluded trips
           && (options.excluded_trips.length == 0 || $.inArray(departure.Trip.InternetServiceDesc, options.excluded_trips) == -1)
           //and if it's in the future,
@@ -330,9 +353,5 @@ function getDepartureInfo(directions) {
       }
     }
   }
-  if (typeof sort_function !== "undefined") {
-    return departures.sort(sort_function);
-  } else {
-    return departures;
-  }
+  return departures.sort(sort_function);
 }
