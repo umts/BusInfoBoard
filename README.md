@@ -2,7 +2,7 @@ This application uses [Avail Technologies'][avail] InfoPoint API
 endpoints to show departures for specified stops. It was written by
 [UMass Transit][umts] IT for use by the [Pioneer Valley Transit
 Authority][pvta]. The application is intended for use on monitors
-and koisks located at bus stops.
+and kiosks located at bus stops.
 
 ![Screenshot](screenshot.png)
 
@@ -52,7 +52,7 @@ Query String
   clearing the display for refresh. This should probably be an "exit"
   animation; the default is "fadeOut".
 - `?title=Bus%20Departures` specifies what title should appear at the top of
-  the page, if any
+  the page, if any.
 
 Config URL
 ----------
