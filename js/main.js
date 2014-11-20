@@ -62,6 +62,7 @@ function startErrorRoutine() {
       container.empty();
       initBoard();
     },
+    timeout: 1000,
     error: function(){
       setTimeout(function(){startErrorRoutine()}, 5000)
     }
