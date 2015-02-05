@@ -1,0 +1,40 @@
+<html>
+<head>
+  <title>Bus Info Board</title>
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/chosen.css">
+  <link rel="stylesheet" href="css/loader.css">
+  <link rel="stylesheet" href="css/main.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+  <script src="js/jquery-1.11.0.min.js"></script>
+  <script src="js/chosen.jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/moment.min.js"></script>
+  <script src="js/geo.js"></script>
+  <script src="js/underscore.min.js"></script>
+  <script src="js/main.js"></script>
+</head>
+<body>
+  <div class="load-holder fadeable">
+    <div class="loader">Loading...</div>
+  </div>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-6">
+        <h1>Routes</h1>
+        <select name="routes[]" class="routes" data-placeholder="Select Routes" multiple></select>
+      </div>
+      <div class="col-md-6">
+        <h1>Stops</h1>
+        <select name="stops[]" class="nearby-stops" data-placeholder="Select Stops" multiple></select>
+      </div>
+    </div>
+    <div class="row go-button-holder">
+      <div class="col-sm-12 text-center">
+        <div class="btn btn-success go-button">View Departures</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

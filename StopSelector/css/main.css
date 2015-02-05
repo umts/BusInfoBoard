@@ -1,0 +1,55 @@
+html, body {
+  background-color: black;
+  font-family: 'Open Sans', sans-serif;
+}
+
+h1 {
+  color: white;
+  font-size: 4em;
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+
+h2 {
+  color: white;
+  font-size: 3em;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.load-holder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 10;
+}
+
+.loader {
+  position: relative;
+  top: 50%;
+  height: 20px;
+  margin-top: -10px;
+}
+
+.fadeable.fade{
+    opacity: 0;
+}
+
+.fadeable {
+  -webkit-transition: opacity 0.5s linear;
+  -moz-transition: opacity 0.5s linear;
+  -ms-transition: opacity 0.5s linear;
+  -o-transition: opacity 0.5s linear;
+   opacity: 1;
+}
+
+.routes, .nearby-stops {
+  width: 100%;
+}
+
+.go-button-holder {
+  margin-top: 20px;
+}
