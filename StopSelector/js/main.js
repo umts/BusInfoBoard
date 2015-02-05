@@ -1,11 +1,12 @@
 // Javascript for parsing and displaying departure information
 var url = "http://bustracker.pvta.com/InfoPoint/rest/";
+var boardLocation = "/BusInfoBoard";
 
 $(function() {
   // Load the BusInfoBoard with the selected stops
   $( '.go-button').on('click', function() {
     var stops = $('.nearby-stops').val();
-    document.location.href = window.location.protocol + "//" + window.location.host + "?stops=" + stops.join("+");
+    document.location.href = window.location.protocol + "//" + window.location.host + boardLocation + "?stops=" + stops.join("+");
   });
 
   // List of all PVTA routes
