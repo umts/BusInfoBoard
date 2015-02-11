@@ -20,14 +20,30 @@
     <div class="loader">Loading...</div>
   </div>
   <div class="container-fluid">
-    <div class="row">
+    <div class="nearby-holder">
+      <div class="row nearby-holder">
+        <div class="col-md-12">
+          <h2>Choose from nearby stops</h2>
+          <select name="nearby[]" class="nearby-stops stops" data-placeholder="Select Stops" multiple></select>
+        </div>
+      </div>
+      <div class="row go-button-holder">
+        <div class="col-sm-12 text-center">
+          <div class="btn btn-success go-button">View Departures</div>
+        </div>
+      </div>
+      <div class="row">
+        <h3 class="text-center or">----Or----</h3>
+      </div>
+    </div>
+    <div class="row selector-holder">
       <div class="col-md-6">
-        <h1>Routes</h1>
+        <h2>Filter by routes</h2>
         <select name="routes[]" class="routes" data-placeholder="Select Routes" multiple></select>
       </div>
       <div class="col-md-6">
-        <h1>Stops</h1>
-        <select name="stops[]" class="nearby-stops" data-placeholder="Select Stops" multiple></select>
+        <h2>Then choose stops</h2>
+        <select name="stops[]" class="route-stops stops" data-placeholder="Select Stops" multiple></select>
       </div>
     </div>
     <div class="row go-button-holder">

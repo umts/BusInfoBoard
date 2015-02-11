@@ -1,19 +1,21 @@
 // Javascript for parsing and displaying departure information
 var url = "http://bustracker.pvta.com/InfoPoint/rest/";
-var boardLocation = "/BusInfoBoard";
 
 $(function() {
   // Load the BusInfoBoard with the selected stops
   $( '.go-button').on('click', function() {
-    var stops = $('.nearby-stops').val();
-    document.location.href = window.location.protocol + "//" + window.location.host + boardLocation + "?stops=" + stops.join("+");
+    // Buttons are the row after the stop selector
+    var stops = $(this).parents('.row').prev().find('.stops').val();
+    document.location.href = busBoardURL(stops);
   });
 
   // List of all PVTA routes
   var routes = $('.routes');
+  var routeStops = $('.route-stops');
 
   // Use the Chosen jQuery plugin for our multiple select boxes
   routes.chosen();
+  routeStops.chosen();
   $('.nearby-stops').chosen();
 
   // When a route is added or removed from the list, reload the list of stops
@@ -41,7 +43,7 @@ $(function() {
               }
               return 0
             });
-            stopList(stops);
+            stopList(routeStops, stops);
           }
         }
       });
@@ -87,28 +89,15 @@ function get_location() {
 }
 
 function populate_list_no_geo() {
-  // Load all of the stops
-  $.ajax({
-    url: url + "stops/getallstops",
-    success: function(stop_data) {
-      stop_data.sort(function(a,b) {
-        if (a.Name > b.Name) {
-          return 1;
-        }
-        if (a.Name < b.Name) {
-          return -1;
-        }
-        return 0
-      });
-      stopList(stop_data);
-    }
-  });
+  // Hide the nearby stops option
+  $('.nearby-holder').hide();
+  removeFade();
+  
+  // Then we'll populate the stop list once they select routes
 }
 
-function stopList(stops) {
+function stopList(select, stops) {
   fadeBlack(function() {
-    var select = $('.nearby-stops');
-
     select.empty();
     for(var i = 0; i < stops.length; i++) {
       select.append('<option value="' + stops[i].StopId + '">' + stops[i].Name + '</option>');
@@ -134,7 +123,7 @@ function populate_list_geo(pos) {
       var stop_count = Math.min(10, stop_data.length);
       // Get the nearest few stops, removing duplicates that appear for some reason
       stop_data = _.uniq(stop_data.slice(0, stop_count), _.iteratee('StopId'));
-      stopList(stop_data);
+      stopList(select, stop_data);
     }
   });
 }
@@ -188,4 +177,17 @@ function removeFade(callback) {
       callback();
     });
   }
+}
+
+function busBoardURL(stops) {
+  var url = window.location.href;
+  
+  // Remove trailing slash if it exists
+  if (url.charAt(url.length-1) == "/") {
+    url = url.slice(0,-1);
+  }
+  
+  // Remove the last section of the URL, because the repo is structured with
+  // the BusInfoBoard one directory up
+  return url.split("/").slice(0,-1).join("/") + "?stops=" + stops.join("+");
 }

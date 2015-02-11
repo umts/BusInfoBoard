@@ -18,7 +18,7 @@ h2 {
 }
 
 .load-holder {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -46,10 +46,27 @@ h2 {
    opacity: 1;
 }
 
-.routes, .nearby-stops {
+.routes, .nearby-stops, .stops {
   width: 100%;
 }
 
 .go-button-holder {
   margin-top: 20px;
+}
+
+h2 {
+  text-align: center;
+}
+
+h3 {
+  color: white;
+}
+
+.or {
+  margin-bottom: 0;
+}
+@media (min-width: 992px) {
+  h2 {
+    text-align: left;
+  }
 }
