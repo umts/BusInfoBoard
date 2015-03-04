@@ -15,7 +15,9 @@ var options =
   work_day_start: 4,              // default time a new transit day starts
   interval: 30000,                // default time in ms between refreshes
   title: "",                      // title to display at top of page
-  sort: "route"                   // default way to sort departures
+  sort: "route",                  // default way to sort departures
+  mobile: false,
+  logo_url: ""
 }
 
 var container;
@@ -139,13 +141,21 @@ function updateOptions() {
     options.end_animation = end_animation_query_string
   }
 
-  //if there are no animations specified, don't allow time for them to execute
-  if (options.start_animation == 'none' && options.end_animation == 'none'){
-    END_ANIMATION_TIME = 0
+  var logo_url_string = query.logo_url;
+  if (typeof logo_url_string !== 'undefined'){
+    if (logo_url_string.slice(-1) == "/") {
+      logo_url_string = logo_url_string.slice(0,-1);
+    }
+    options.logo_url = logo_url_string;
   }
 
-  //expected value is in seconds, we convert to ms
-  //minimum allowed is MINIMUM_REFRESH_TIME seconds
+  // If there are no animations specified, don't allow time for them to execute
+  if (options.start_animation == 'none' && options.end_animation == 'none'){
+    END_ANIMATION_TIME = 0;
+  }
+
+  // Expected value is in seconds, we convert to ms
+  // Minimum allowed is MINIMUM_REFRESH_TIME seconds
   var interval_query_string = query.interval;
   if (typeof interval_query_string !== 'undefined'){
     options.interval = Math.max(MINIMUM_REFRESH_TIME, parseInt(interval_query_string)) * 1000;
@@ -169,14 +179,35 @@ function updateOptions() {
 
   var title_string = query.title;
   if (typeof title_string !== "undefined") {
+    // To handle browsers adding a slash after the query string
+    if (title_string.slice(-1) == "/") {
+      title_string = title_string.slice(0,-1);
+    }
     options.title = title_string;
+  }
+
+  var mobile_string = query.mobile;
+  if (typeof mobile_string !== "undefined") {
+    options.mobile = true;
+    options.start_animation = 'none';
+    options.end_animation = 'none';
+    options.interval = 10000;
+    CASCADE_SPEED = 0;
+    END_ANIMATION_TIME = 0;
   }
 }
 
 function initTitle() {
-  if (typeof options.title !== "undefined" && options.title != "") {
-    $('body').prepend('<h1 class="title">' + options.title + '</h1>');
+  var body = $('body');
+
+  if (typeof options.logo_url !== "undefined" && options.logo_url != "") {
+    body.prepend('<img class="logo" src="' + options.logo_url + '">');
   }
+
+  if (typeof options.title !== "undefined" && options.title != "") {
+    body.prepend('<h1 class="title">' + options.title + '</h1>');
+  }
+
 }
 
 function initBoard() {
@@ -199,8 +230,8 @@ function startRefreshing() {
   // Refresh the board every REFRESH_TIME ms
   refresh_id = setInterval(function() {
     removeTables();
-    //since we wait END_ANIMATION_TIME before emptying the page,
-    //we wait this long before adding in the new tables.
+    // Since we wait END_ANIMATION_TIME before emptying the page, we wait this
+    // long before adding in the new tables.
     setTimeout(function(){
       addTables();
     }, END_ANIMATION_TIME)
@@ -275,7 +306,7 @@ function addTables() {
 }
 
 //removes the tables in preparation to load in the new ones. fancy CSS magic.
-function removeTables(){
+function removeTables() {
   //fade out stops and their departures
   $('h1').addClass(options.end_animation);
   $('.route').addClass(options.end_animation);
