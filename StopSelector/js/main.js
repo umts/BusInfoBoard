@@ -203,7 +203,14 @@ function removeFade(callback) {
 
 function busBoardURL(stops) {
   var url = window.location.href;
-  
+
+  var query_index = url.indexOf("?");
+  var query_string = "?";
+
+  if (query_index != -1) {
+    query_string = url.slice(query_index);
+    url = url.slice(0, query_index);
+  }
   // Remove trailing slash if it exists
   if (url.charAt(url.length-1) == "/") {
     url = url.slice(0,-1);
@@ -211,7 +218,7 @@ function busBoardURL(stops) {
   
   // Remove the last section of the URL, because the repo is structured with
   // the BusInfoBoard one directory up
-  return url.split("/").slice(0,-1).join("/") + "?stops=" + stops.join("+");
+  return url.split("/").slice(0,-1).join("/") + query_string + "&stops=" + stops.join("+");
 }
 
 function updateOptions() {
