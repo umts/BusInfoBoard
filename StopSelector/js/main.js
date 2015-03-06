@@ -1,7 +1,16 @@
 // Javascript for parsing and displaying departure information
-var url = "http://bustracker.pvta.com/InfoPoint/rest/";
+
+var options =
+{
+  url: "http://bustracker.pvta.com/InfoPoint/rest/",
+  title: "",                      // title to display at top of page
+  logo_url: ""                    // logo to display at top of page
+}
 
 $(function() {
+  updateOptions();
+  initTitle();
+
   // Load the BusInfoBoard with the selected stops
   $( '.go-button').on('click', function() {
     // Buttons are the row after the stop selector
@@ -27,7 +36,7 @@ $(function() {
     // For each route selected, we get a list of stops
     for (var i = 0; i < routes.length; i++) {
       $.ajax({
-        url: url + "routedetails/get/" + routes[i],
+        url: options.url + "routedetails/get/" + routes[i],
         success: function(route_details) {
           stops.push(route_details.Stops);
           remainingRoutes--;
@@ -51,11 +60,11 @@ $(function() {
   });
 
   // Ask the user for their location
-  get_location();
+  getLocation();
 
   // Load all of the routes from the InfoPoint API
   $.ajax({
-    url: url + "routes/getvisibleroutes",
+    url: options.url + "routes/getvisibleroutes",
     success: function(route_data) {
       // Sort routes by Route name
       route_data.sort(function(a,b) {
@@ -79,16 +88,29 @@ $(function() {
   });
 });
 
-function get_location() {
+function initTitle() {
+  var body = $('.body');
+
+  if (typeof options.logo_url !== "undefined" && options.logo_url != "") {
+    body.prepend('<img class="logo" src="' + options.logo_url + '">');
+  }
+
+  if (typeof options.title !== "undefined" && options.title != "") {
+    body.prepend('<h1 class="title">' + options.title + '</h1>');
+  }
+
+}
+
+function getLocation() {
   if (Modernizr.geolocation) {
-    return navigator.geolocation.getCurrentPosition(populate_list_geo, populate_list_no_geo);
+    return navigator.geolocation.getCurrentPosition(populateListGeo, populateListNoGeo);
   } else {
     // Fallback to no_geo option
-    populate_list_no_geo();
+    populateListNoGeo();
   }
 }
 
-function populate_list_no_geo() {
+function populateListNoGeo() {
   // Hide the nearby stops option
   $('.nearby-holder').hide();
   removeFade();
@@ -107,13 +129,13 @@ function stopList(select, stops) {
   });
 }
 
-function populate_list_geo(pos) {
+function populateListGeo(pos) {
   var select = $('.nearby-stops');
   var lat = pos.coords.latitude;
   var lon = pos.coords.longitude;
 
   $.ajax({
-    url: url + "stops/getallstops",
+    url: options.url + "stops/getallstops",
     success: function(stop_data) {
       // Sort the stops by distance
       stop_data.sort(function(a,b) {
@@ -190,4 +212,38 @@ function busBoardURL(stops) {
   // Remove the last section of the URL, because the repo is structured with
   // the BusInfoBoard one directory up
   return url.split("/").slice(0,-1).join("/") + "?stops=" + stops.join("+");
+}
+
+function updateOptions() {
+
+  var query = QueryStringAsObject();
+
+  var title_string = query.title;
+  if (typeof title_string !== "undefined") {
+    // To handle browsers adding a slash after the query string
+    if (title_string.slice(-1) == "/") {
+      title_string = title_string.slice(0,-1);
+    }
+    options.title = title_string;
+  }
+
+  var logo_url_string = query.logo_url;
+  if (typeof logo_url_string !== 'undefined'){
+    if (logo_url_string.slice(-1) == "/") {
+      logo_url_string = logo_url_string.slice(0,-1);
+    }
+    options.logo_url = logo_url_string;
+  }
+}
+
+function QueryStringAsObject() {
+  var pairs = location.search.slice(1).split('&');
+  
+  var result = {};
+  for(var i = 0; i < pairs.length; i++) {
+      var pair = pairs[i].split('=');
+      result[pair[0]] = decodeURIComponent(pair[1] || '');
+  }
+
+  return result;
 }
