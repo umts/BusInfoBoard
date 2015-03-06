@@ -1,5 +1,6 @@
 // Javascript for parsing and displaying departure information
 var routes = {};
+var route_ids = [];
 
 // Specify a URL here to load settings first from a configuration file
 var config_url;
@@ -48,9 +49,39 @@ function QueryStringAsObject() {
 $(function(){
   container = $('.main-content');
   updateOptions();
+  loadMessages();
   initTitle();
   initBoard();
 });
+
+function loadMessages() {
+  $.ajax({
+    url: options.url + "PublicMessages/GetCurrentMessages",
+    success: function(messages) {
+      var applicable_messages = [];
+      for (var i = 0; i < messages.length; i++) {
+        var message = messages[i];
+        // If one of the routes on the message is in the list of routes we're
+        // looking at, display this message
+        for (var j = 0; j < message.Routes.length; j++) {
+          var route_id = message.Routes[j];
+          // This message applies to routes we are looking at
+          if ($.inArray(route_id, route_ids) != -1) {
+            applicable_messages.push(message);
+            break;
+          }
+        }
+      }
+      $('.alert-list').empty();
+      for (var i = 0; i < applicable_messages.length; i++) {
+        var message = applicable_messages[i];
+        $('.alert-list').append('<li>' + message.Message + '</li>');
+      }
+    },
+    timeout: 1000,
+    error: startErrorRoutine
+  });
+}
 
 function startErrorRoutine() {
   stopRefreshing();
@@ -368,9 +399,11 @@ function getDepartureInfo(directions) {
   // a unique InternetServiceDesc, and that's what we're checking here.
   var unique_ISDs = [];
   departures = [];
+  route_ids = [];
   for (var i = 0; i < directions.length; i++) {
     var direction = directions[i];
     var route = routes[direction.RouteId];
+    route_ids.push(route.RouteId);
     for (var j = 0; j < direction.Departures.length; j++) {
       var departure = direction.Departures[j];
       //If the departure has a unique InternetServiceDesc,
@@ -387,5 +420,6 @@ function getDepartureInfo(directions) {
       }
     }
   }
+  loadMessages();
   return departures.sort(sort_function);
 }
