@@ -426,6 +426,8 @@ function getDepartureInfo(directions) {
       }
     }
   }
-  loadMessages();
+  if (options.mobile) {
+    loadMessages();
+  }
   return departures.sort(sort_function);
 }
