@@ -86,6 +86,8 @@ $(function() {
       routes.trigger('chosen:updated');
     }
   });
+
+  setTimeout(removeFade, 500);
 });
 
 function initTitle() {
@@ -102,20 +104,12 @@ function initTitle() {
 }
 
 function getLocation() {
-  if (Modernizr.geolocation) {
-    return navigator.geolocation.getCurrentPosition(populateListGeo, populateListNoGeo);
-  } else {
-    // Fallback to no_geo option
-    populateListNoGeo();
-  }
-}
-
-function populateListNoGeo() {
-  // Hide the nearby stops option
   $('.nearby-holder').hide();
-  removeFade();
-  
-  // Then we'll populate the stop list once they select routes
+  if (Modernizr.geolocation) {
+    return navigator.geolocation.getCurrentPosition(populateListGeo, function(){});
+  } else {
+    // NoGeo option
+  }
 }
 
 function stopList(select, stops) {
@@ -130,23 +124,27 @@ function stopList(select, stops) {
 }
 
 function populateListGeo(pos) {
-  var select = $('.nearby-stops');
-  var lat = pos.coords.latitude;
-  var lon = pos.coords.longitude;
+  fadeBlack(function() {
+    var select = $('.nearby-stops');
+    var lat = pos.coords.latitude;
+    var lon = pos.coords.longitude;
 
-  $.ajax({
-    url: options.url + "stops/getallstops",
-    success: function(stop_data) {
-      // Sort the stops by distance
-      stop_data.sort(function(a,b) {
-        return distance(lat, lon, a.Latitude, a.Longitude) - distance(lat, lon, b.Latitude, b.Longitude);
-      });
-      // Make sure we don't try to find more stops than exist.
-      var stop_count = Math.min(10, stop_data.length);
-      // Get the nearest few stops, removing duplicates that appear for some reason
-      stop_data = _.uniq(stop_data.slice(0, stop_count), _.iteratee('StopId'));
-      stopList(select, stop_data);
-    }
+    $.ajax({
+      url: options.url + "stops/getallstops",
+      success: function(stop_data) {
+        // Sort the stops by distance
+        stop_data.sort(function(a,b) {
+          return distance(lat, lon, a.Latitude, a.Longitude) - distance(lat, lon, b.Latitude, b.Longitude);
+        });
+        // Make sure we don't try to find more stops than exist.
+        var stop_count = Math.min(10, stop_data.length);
+        // Get the nearest few stops, removing duplicates that appear for some reason
+        stop_data = _.uniq(stop_data.slice(0, stop_count), _.iteratee('StopId'));
+        stopList(select, stop_data);
+        $('.nearby-holder').show();
+        removeFade();
+      }
+    });
   });
 }
 
