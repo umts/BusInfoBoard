@@ -49,7 +49,6 @@ function QueryStringAsObject() {
 $(function(){
   container = $('.main-content');
   updateOptions();
-  loadMessages();
   initTitle();
   initBoard();
 });
@@ -72,10 +71,17 @@ function loadMessages() {
           }
         }
       }
-      $('.alert-list').empty();
+      var alertIcon = $('.alert-icon');
+      var alertList = $('.alert-list');
+      alertList.empty();
+      if (applicable_messages.length == 0) {
+        alertIcon.addClass('hide');
+      } else {
+        alertIcon.removeClass('hide');
+      }
       for (var i = 0; i < applicable_messages.length; i++) {
         var message = applicable_messages[i];
-        $('.alert-list').append('<li>' + message.Message + '</li>');
+        alertList.append('<li>' + message.Message + '</li>');
       }
     },
     timeout: 1000,
@@ -403,7 +409,6 @@ function getDepartureInfo(directions) {
   for (var i = 0; i < directions.length; i++) {
     var direction = directions[i];
     var route = routes[direction.RouteId];
-    route_ids.push(route.RouteId);
     for (var j = 0; j < direction.Departures.length; j++) {
       var departure = direction.Departures[j];
       //If the departure has a unique InternetServiceDesc,
@@ -417,6 +422,7 @@ function getDepartureInfo(directions) {
         // then we push it to the list, and push its ISD to the unique ISDs list.
         unique_ISDs.push(departure.Trip.InternetServiceDesc);
         departures.push({Departure: departure, Route: route});
+        route_ids.push(route.RouteId);
       }
     }
   }
