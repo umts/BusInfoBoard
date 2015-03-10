@@ -218,7 +218,7 @@ function busBoardURL(stops) {
   
   // Remove the last section of the URL, because the repo is structured with
   // the BusInfoBoard one directory up
-  return url.split("/").slice(0,-1).join("/") + query_string + "&stops=" + stops.join("+");
+  return url.split("/").slice(0,-1).join("/") + query_string + "&mobile=true&stops=" + stops.join("+");
 }
 
 function updateOptions() {
