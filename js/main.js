@@ -433,7 +433,6 @@ function getDepartureInfo(directions) {
 
 // Returns true if there are no departures for any RouteDirection and isDone is true for all of them, false
 function isDone(directions) {
-  var done = false;
   for (var i = 0; i < directions.length; i++) {
     var direction = directions[i];
     // If there are any departures, we're not done
