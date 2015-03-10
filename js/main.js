@@ -314,7 +314,7 @@ function addTables() {
             if (done) {
               message = "No remaining scheduled departures.";
             } else {
-              message = "No departures in the next few hours";
+              message = "No departures in the next two hours";
             }
             section.append('<h2 class="animated ' + options.start_animation + '">' + message + '</h2>');
           }
