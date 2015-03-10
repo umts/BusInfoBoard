@@ -11,6 +11,7 @@ $(function() {
   updateOptions();
   initTitle();
 
+  setTimeout(removeFade, 500);
   // Load the BusInfoBoard with the selected stops
   $( '.go-button').on('click', function() {
     // Buttons are the row after the stop selector
@@ -86,8 +87,6 @@ $(function() {
       routes.trigger('chosen:updated');
     }
   });
-
-  setTimeout(removeFade, 500);
 });
 
 function initTitle() {
@@ -106,7 +105,9 @@ function initTitle() {
 function getLocation() {
   $('.nearby-holder').hide();
   if (Modernizr.geolocation) {
-    return navigator.geolocation.getCurrentPosition(populateListGeo, function(){});
+    return navigator.geolocation.getCurrentPosition(populateListGeo, function(){
+      removeFade();
+    });
   } else {
     // NoGeo option
   }
