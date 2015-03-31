@@ -314,8 +314,15 @@ function addTables() {
           section.append('<h1 class="animated ' + options.start_animation + '">' + stop_info.Name + "</h1>");
           departure_data[0] = departure_data[0] || {RouteDirections: []}
           var infos = getDepartureInfo(departure_data[0].RouteDirections);
+          var done = isDone(departure_data[0].RouteDirections);
           if (infos.length == 0){
-            section.append('<h2 class="animated ' + options.start_animation + '">No remaining scheduled departures.</h2>');
+            var message = "";
+            if (done) {
+              message = "No remaining scheduled departures.";
+            } else {
+              message = "No departures in the next two hours";
+            }
+            section.append('<h2 class="animated ' + options.start_animation + '">' + message + '</h2>');
           }
           var i = 0; // For that soothing cascading effect
           var id = setInterval(function() {
@@ -430,4 +437,22 @@ function getDepartureInfo(directions) {
     loadMessages();
   }
   return departures.sort(sort_function);
+}
+
+// Returns true if there are no departures for any RouteDirection and isDone is true for all of them, false
+function isDone(directions) {
+  for (var i = 0; i < directions.length; i++) {
+    var direction = directions[i];
+    // If there are any departures, we're not done
+    if (direction.Departures.length > 0) {
+      return false;
+    }
+
+    // If there's no departures and we're not done, then we're not done
+    if (!direction.IsDone) {
+      return false;
+    }
+  }
+  // If there are no departures and they all have isDone == true, we're done
+  return true;
 }
