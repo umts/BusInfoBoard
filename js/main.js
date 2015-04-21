@@ -61,7 +61,12 @@ function loadMessages() {
       for (var i = 0; i < messages.length; i++) {
         var message = messages[i];
         // If one of the routes on the message is in the list of routes we're
-        // looking at, display this message
+        // looking at, or if it pertains to all routes (no specific routes specified),
+        // display this message
+        if (message.Routes.length == 0){
+          applicable_messages.push(message);
+          break;
+        }
         for (var j = 0; j < message.Routes.length; j++) {
           var route_id = message.Routes[j];
           // This message applies to routes we are looking at
