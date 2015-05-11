@@ -1,6 +1,7 @@
 // Javascript for parsing and displaying departure information
 var routes = {};
-var route_ids = [];
+// Store all the routes we find running at the given stops
+var all_route_ids = [];
 
 // Specify a URL here to load settings first from a configuration file
 var config_url;
@@ -65,12 +66,13 @@ function loadMessages() {
         // display this message
         if (message.Routes.length == 0){
           applicable_messages.push(message);
-          break;
+          continue;
         }
+
         for (var j = 0; j < message.Routes.length; j++) {
           var route_id = message.Routes[j];
           // This message applies to routes we are looking at
-          if ($.inArray(route_id, route_ids) != -1) {
+          if ($.inArray(route_id, all_route_ids) != -1) {
             applicable_messages.push(message);
             break;
           }
@@ -88,6 +90,7 @@ function loadMessages() {
         var message = applicable_messages[i];
         alertList.append('<li>' + message.Message + '</li>');
       }
+      all_route_ids = [];
     },
     timeout: 1000,
     error: startErrorRoutine
@@ -343,6 +346,12 @@ function addTables() {
                   addTables(options.stops);
                 } else {
                   stop_index = 0;
+                  // Load the public messages if we're on mobile, but only once
+                  // we've loaded all our routes, which we do iteratively in
+                  // getDepartureInfo
+                  if (options.mobile) {
+                    loadMessages();
+                  }
                 }
               }
             }, CASCADE_SPEED);
@@ -417,7 +426,7 @@ function getDepartureInfo(directions) {
   // a unique InternetServiceDesc, and that's what we're checking here.
   var unique_ISDs = [];
   departures = [];
-  route_ids = [];
+  var route_ids = [];
   for (var i = 0; i < directions.length; i++) {
     var direction = directions[i];
     var route = routes[direction.RouteId];
@@ -435,11 +444,10 @@ function getDepartureInfo(directions) {
         unique_ISDs.push(departure.Trip.InternetServiceDesc);
         departures.push({Departure: departure, Route: route});
         route_ids.push(route.RouteId);
+        // A global list of routes running on our stops
+        all_route_ids.push(route.RouteId);
       }
     }
-  }
-  if (options.mobile) {
-    loadMessages();
   }
   return departures.sort(sort_function);
 }
