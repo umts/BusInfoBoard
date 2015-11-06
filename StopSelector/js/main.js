@@ -8,9 +8,9 @@ var options =
 }
 
 $(function() {
+  loadAllStops();
   updateOptions();
   initTitle();
-  loadAllStops();
 
   setTimeout(removeFade, 500);
   // Load the BusInfoBoard with the selected stops
@@ -23,20 +23,40 @@ $(function() {
   // List of all PVTA routes
   var routes = $('.routes');
   var routeStops = $('.route-stops');
-
+  var everyStop;
+  
   // Use the Chosen jQuery plugin for our multiple select boxes
   routes.chosen();
   routeStops.chosen();
   $('.nearby-stops').chosen();
   
+  
+  
+/**This function will download and display
+ * **all** of PVTA's stops, so that users can
+ * type in and view a specific stop or
+ * number of stops without having to first pick
+ * a route.
+ **/
   function loadAllStops(){
     var stops = [];
+    /** If we've already downloaded
+     * and sorted every stop, no
+     * need to do it again
+     **/
+    if(everyStop){
+      //Display the list of stops
+      stopList(routeStops, everyStop);
+      return;
+    }
       $.ajax({
         url: options.url + 'stops/getallstops',  
         success: function(allStops){
-          console.log(typeof allStops);
-          allStops = uniqueifyAndSort(allStops);
-          stopList(routeStops, allStops);
+          // Set the everyStop variable to the list so 
+          // we don't have to download it all again.
+          everyStop = allStops;
+          everyStop = uniqueifyAndSort(everyStop);
+          stopList(routeStops, everyStop);
         } //end success callback
     }); //end ajax call
   }
@@ -134,6 +154,23 @@ function stopList(select, stops) {
 }
 
 
+
+/**
+* This function takes in a collection,
+* (array, object, etc) 
+* It iterates over the entire thing, removes
+* duplicate values, and sorts it by the StopID.
+*
+* This isn't really usable for anything other than
+* stops rn. ISSUE: trying to pass an attribute as
+* a string param to the function causes it to
+* throw out everything except one stop.
+* 
+* @param: collection: Object
+* @return: collection: Object <-- the sorted and
+* uniquified version of your input.
+**/
+
 function uniqueifyAndSort(collection){
   collection = _.uniq(_.union(_.flatten(collection)), _.iteratee('StopId'));
   collection.sort(function(a,b) {
@@ -149,18 +186,6 @@ function uniqueifyAndSort(collection){
 }
 
 
-/*This function will download and display
- * **all** of PVTA's stops, so that users can
- * type in and view a specific stop or
- * number of stops without having to first pick
- * a route.
- * 
- * CALL WITH CAUTION: Loading and displaying a
- * list of every single stop takes ~1/4 of a second.
- * loadAllStops() is called when the page inits
- * and when the user has emptied their route
- * selections.
- */
 
 
 function populateListGeo(pos) {
