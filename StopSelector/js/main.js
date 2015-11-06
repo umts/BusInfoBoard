@@ -30,25 +30,15 @@ $(function() {
   $('.nearby-stops').chosen();
   
   function loadAllStops(){
-      var stops = [];
+    var stops = [];
       $.ajax({
         url: options.url + 'stops/getallstops',  
         success: function(allStops){
           console.log(typeof allStops);
-          allStops = _.uniq(_.union(_.flatten(allStops)), _.iteratee('Name'));
-          allStops.sort(function(a,b) {
-              if (a.Name > b.Name) {
-                return 1;
-              }
-              if (a.Name < b.Name) {
-                return -1;
-              }
-              return 0
-            });
+          allStops = uniqueifyAndSort(allStops);
           stopList(routeStops, allStops);
-          
         } //end success callback
-      }); //end ajax call
+    }); //end ajax call
   }
 
   
@@ -60,29 +50,23 @@ $(function() {
     var remainingRoutes = routes.length;
     var stops = [];
     // For each route selected, we get a list of stops
-    for (var i = 0; i < routes.length; i++) {
-      $.ajax({
-        url: options.url + "routedetails/get/" + routes[i],
-        success: function(route_details) {
-          stops.push(route_details.Stops);
-          remainingRoutes--;
-          if (remainingRoutes == 0) {
-            // Put all of the stops into a single array and sort them
-            stops = _.uniq(_.union(_.flatten(stops)), _.iteratee('StopId'));
-            stops.sort(function(a,b) {
-              if (a.Name > b.Name) {
-                return 1;
-              }
-              if (a.Name < b.Name) {
-                return -1;
-              }
-              return 0
-            });
-            stopList(routeStops, stops);
-          }
-        }
-      });
-    }
+    if(routes.length === 0) loadAllStops();
+    else{
+      for (var i = 0; i < routes.length; i++) {
+        $.ajax({
+          url: options.url + "routedetails/get/" + routes[i],
+          success: function(route_details) {
+            stops.push(route_details.Stops);
+            remainingRoutes--;
+            if (remainingRoutes == 0) {
+              // Put all of the stops into a single array and sort them
+              stops = uniqueifyAndSort(stops);
+              stopList(routeStops, stops);
+            }
+          } //end success callback
+        }); //end ajax call
+      } //end for
+    } //end else
   });
 
   // Ask the user for their location
@@ -147,6 +131,21 @@ function stopList(select, stops) {
     select.trigger('chosen:updated');
     removeFade();
   });
+}
+
+
+function uniqueifyAndSort(collection){
+  collection = _.uniq(_.union(_.flatten(collection)), _.iteratee('StopId'));
+  collection.sort(function(a,b) {
+  if (a.Name > b.Name) {
+    return 1;
+  }
+  if (a.Name < b.Name) {
+    return -1;
+  }
+  return 0
+  });
+  return collection;
 }
 
 
