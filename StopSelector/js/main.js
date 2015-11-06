@@ -29,6 +29,28 @@ $(function() {
   routeStops.chosen();
   $('.nearby-stops').chosen();
   
+  function loadAllStops(){
+      var stops = [];
+      $.ajax({
+        url: options.url + 'stops/getallstops',  
+        success: function(allStops){
+          console.log(typeof allStops);
+          allStops = _.uniq(_.union(_.flatten(allStops)), _.iteratee('Name'));
+          allStops.sort(function(a,b) {
+              if (a.Name > b.Name) {
+                return 1;
+              }
+              if (a.Name < b.Name) {
+                return -1;
+              }
+              return 0
+            });
+          stopList(routeStops, allStops);
+          
+        } //end success callback
+      }); //end ajax call
+  }
+
   
   
   // When a route is added or removed from the list, reload the list of stops
@@ -55,7 +77,7 @@ $(function() {
                 return -1;
               }
               return 0
-            });;
+            });
             stopList(routeStops, stops);
           }
         }
@@ -141,15 +163,6 @@ function stopList(select, stops) {
  * selections.
  */
 
-function loadAllStops(){
-      var stops = [];
-      $.ajax({
-        url: options.url + 'stops/getallstops',  
-        success: function(allStops){
-          stopList(routeStops, allStops);
-        } //end success callback
-      }); //end ajax call
-  }
 
 function populateListGeo(pos) {
   fadeBlack(function() {
