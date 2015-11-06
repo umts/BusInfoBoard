@@ -10,6 +10,7 @@ var options =
 $(function() {
   updateOptions();
   initTitle();
+  loadAllStops();
 
   setTimeout(removeFade, 500);
   // Load the BusInfoBoard with the selected stops
@@ -27,7 +28,9 @@ $(function() {
   routes.chosen();
   routeStops.chosen();
   $('.nearby-stops').chosen();
-
+  
+  
+  
   // When a route is added or removed from the list, reload the list of stops
   // accessible by those routes
   routes.on("change", function() {
@@ -52,7 +55,7 @@ $(function() {
                 return -1;
               }
               return 0
-            });
+            });;
             stopList(routeStops, stops);
           }
         }
@@ -123,6 +126,30 @@ function stopList(select, stops) {
     removeFade();
   });
 }
+
+
+/*This function will download and display
+ * **all** of PVTA's stops, so that users can
+ * type in and view a specific stop or
+ * number of stops without having to first pick
+ * a route.
+ * 
+ * CALL WITH CAUTION: Loading and displaying a
+ * list of every single stop takes ~1/4 of a second.
+ * loadAllStops() is called when the page inits
+ * and when the user has emptied their route
+ * selections.
+ */
+
+function loadAllStops(){
+      var stops = [];
+      $.ajax({
+        url: options.url + 'stops/getallstops',  
+        success: function(allStops){
+          stopList(routeStops, allStops);
+        } //end success callback
+      }); //end ajax call
+  }
 
 function populateListGeo(pos) {
   fadeBlack(function() {
