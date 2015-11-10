@@ -8,6 +8,7 @@ var options =
 }
 
 $(function() {
+  loadAllStops();
   updateOptions();
   initTitle();
 
@@ -22,12 +23,47 @@ $(function() {
   // List of all PVTA routes
   var routes = $('.routes');
   var routeStops = $('.route-stops');
-
+  var everyStop;
+  
   // Use the Chosen jQuery plugin for our multiple select boxes
   routes.chosen();
   routeStops.chosen();
   $('.nearby-stops').chosen();
+  
+  
+  
+/**This function will download and display
+ * **all** of PVTA's stops, so that users can
+ * type in and view a specific stop or
+ * number of stops without having to first pick
+ * a route.
+ **/
+  function loadAllStops(){
+    var stops = [];
+    /** If we've already downloaded
+     * and sorted every stop, no
+     * need to do it again
+     **/
+    var span = document.getElementById('stop-selector').innerHTML = "<h2>Or: Search Stops</h2>";
+    if(everyStop){
+      //Display the list of stops
+      stopList(routeStops, everyStop);
+      return;
+    }
+      $.ajax({
+        url: options.url + 'stops/getallstops',  
+        success: function(allStops){
+          // Set the everyStop variable to the list so 
+          // we don't have to download it all again.
+          everyStop = allStops;
+          everyStop = uniqueifyAndSort(everyStop);
+          stopList(routeStops, everyStop);
+        } //end success callback
+    }); //end ajax call
+  }
 
+  
+  
   // When a route is added or removed from the list, reload the list of stops
   // accessible by those routes
   routes.on("change", function() {
@@ -35,29 +71,24 @@ $(function() {
     var remainingRoutes = routes.length;
     var stops = [];
     // For each route selected, we get a list of stops
-    for (var i = 0; i < routes.length; i++) {
-      $.ajax({
-        url: options.url + "routedetails/get/" + routes[i],
-        success: function(route_details) {
-          stops.push(route_details.Stops);
-          remainingRoutes--;
-          if (remainingRoutes == 0) {
-            // Put all of the stops into a single array and sort them
-            stops = _.uniq(_.union(_.flatten(stops)), _.iteratee('StopId'));
-            stops.sort(function(a,b) {
-              if (a.Name > b.Name) {
-                return 1;
-              }
-              if (a.Name < b.Name) {
-                return -1;
-              }
-              return 0
-            });
-            stopList(routeStops, stops);
-          }
-        }
-      });
-    }
+    if(routes.length === 0) loadAllStops();
+    else{
+      var span = document.getElementById('stop-selector').innerHTML = "<h2>Now Search Stops</h2>";
+      for (var i = 0; i < routes.length; i++) {
+        $.ajax({
+          url: options.url + "routedetails/get/" + routes[i],
+          success: function(route_details) {
+            stops.push(route_details.Stops);
+            remainingRoutes--;
+            if (remainingRoutes == 0) {
+              // Put all of the stops into a single array and sort them
+              stops = uniqueifyAndSort(stops);
+              stopList(routeStops, stops);
+            }
+          } //end success callback
+        }); //end ajax call
+      } //end for
+    } //end else
   });
 
   // Ask the user for their location
@@ -123,6 +154,41 @@ function stopList(select, stops) {
     removeFade();
   });
 }
+
+
+
+/**
+* This function takes in a collection,
+* (array, object, etc) 
+* It iterates over the entire thing, removes
+* duplicate values, and sorts it by the StopID.
+*
+* This isn't really usable for anything other than
+* stops rn. ISSUE: trying to pass an attribute as
+* a string param to the function causes it to
+* throw out everything except one stop.
+* 
+* @param: collection: Object
+* @return: collection: Object <-- the sorted and
+* uniquified version of your input.
+**/
+
+function uniqueifyAndSort(collection){
+  collection = _.uniq(_.union(_.flatten(collection)), _.iteratee('StopId'));
+  collection.sort(function(a,b) {
+  if (a.Name > b.Name) {
+    return 1;
+  }
+  if (a.Name < b.Name) {
+    return -1;
+  }
+  return 0
+  });
+  return collection;
+}
+
+
+
 
 function populateListGeo(pos) {
   fadeBlack(function() {

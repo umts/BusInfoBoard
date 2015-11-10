@@ -15,6 +15,19 @@
   <script src="js/underscore.min.js"></script>
   <script src="js/main.js"></script>
 </head>
+  <style>
+    h2 {
+      display: inline-block;
+      font-size: 1.5em;
+      margin-before: 0.83em;
+      margin-after: 0.83em;
+      margin-start: 0;
+      margin-end: 0;
+      font-weight: bold; }
+    span {
+      color: "white";
+    }
+  </style>
 <body>
   <div class="load-holder fadeable">
     <div class="loader">Loading...</div>
@@ -38,12 +51,12 @@
     </div>
     <div class="row selector-holder">
       <div class="col-md-6">
-        <h2>Filter by routes</h2>
-        <select name="routes[]" class="routes" data-placeholder="Select Routes" multiple></select>
+        <h2>Select Routes</h2> <font color="white">&nbsp;[Optional]</font>
+        <select name="routes[]" class="routes" data-placeholder="Search or Select Routes" multiple></select>
       </div>
       <div class="col-md-6">
-        <h2>Then choose stops</h2>
-        <select name="stops[]" class="route-stops stops" data-placeholder="Select Stops" multiple></select>
+        <span id="stop-selector"></span>
+        <select name="stops[]" class="route-stops stops" data-placeholder="Search or Select Stops" multiple></select>
       </div>
     </div>
     <div class="row go-button-holder">
