@@ -15,19 +15,6 @@
   <script src="js/underscore.min.js"></script>
   <script src="js/main.js"></script>
 </head>
-  <style>
-    h2 {
-      display: inline-block;
-      font-size: 1.5em;
-      margin-before: 0.83em;
-      margin-after: 0.83em;
-      margin-start: 0;
-      margin-end: 0;
-      font-weight: bold; }
-    span {
-      color: "white";
-    }
-  </style>
 <body>
   <div class="load-holder fadeable">
     <div class="loader">Loading...</div>
@@ -36,7 +23,7 @@
     <div class="nearby-holder">
       <div class="row nearby-holder">
         <div class="col-md-12">
-          <h2>Choose from nearby stops</h2>
+          <h3>Choose from nearby stops</h3>
           <select name="nearby[]" class="nearby-stops stops" data-placeholder="Select Stops" multiple></select>
         </div>
       </div>
@@ -51,7 +38,8 @@
     </div>
     <div class="row selector-holder">
       <div class="col-md-6">
-        <h2>Select Routes</h2> <font color="white">&nbsp;[Optional]</font>
+        <h3>Select Routes</h3>
+        <h4>[Optional]</h4>
         <select name="routes[]" class="routes" data-placeholder="Search or Select Routes" multiple></select>
       </div>
       <div class="col-md-6">
