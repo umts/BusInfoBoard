@@ -44,7 +44,7 @@ $(function() {
      * and sorted every stop, no
      * need to do it again
      **/
-    var span = document.getElementById('stop-selector').innerHTML = "<h2>Or: Search Stops</h2>";
+    var span = document.getElementById('stop-selector').innerHTML = "<h3>Or: Search Stops</h3>";
     if(everyStop){
       //Display the list of stops
       stopList(routeStops, everyStop);
@@ -73,7 +73,7 @@ $(function() {
     // For each route selected, we get a list of stops
     if(routes.length === 0) loadAllStops();
     else{
-      var span = document.getElementById('stop-selector').innerHTML = "<h2>Now Search Stops</h2>";
+      var span = document.getElementById('stop-selector').innerHTML = "<h3>Now Search Stops</h3>";
       for (var i = 0; i < routes.length; i++) {
         $.ajax({
           url: options.url + "routedetails/get/" + routes[i],

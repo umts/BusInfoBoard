@@ -16,8 +16,13 @@ h1.title {
   text-align: center;
 }
 
-h2, h3 {
+h2, h3, h4{
   color: white;
+  display: inline-block;
+}
+
+h4{
+  padding-left: 0.25em;
 }
 
 .load-holder {
