@@ -266,24 +266,22 @@ function removeFade(callback) {
   }
 }
 
+// input is an array of strings.
+// removes the 'StopSelector' portion of the URL;
+// maintains the existing query string,
+// and appends to that query string:
+//   mobile: true,
+//   stops: the stop IDs given
 function busBoardURL(stops) {
   var url = window.location.href;
+  var url_without_stop_selector = url.split("/StopSelector")[0]
 
-  var query_index = url.indexOf("?");
-  var query_string = "?";
+  var query_obj = QueryStringAsObject()
+  query_obj["mobile"] = true
+  query_obj["stops"] = stops
+  var new_query_string = ObjectAsQueryString(query_obj)
 
-  if (query_index != -1) {
-    query_string = url.slice(query_index);
-    url = url.slice(0, query_index);
-  }
-  // Remove trailing slash if it exists
-  if (url.charAt(url.length-1) == "/") {
-    url = url.slice(0,-1);
-  }
-  
-  // Remove the last section of the URL, because the repo is structured with
-  // the BusInfoBoard one directory up
-  return url.split("/").slice(0,-1).join("/") + query_string + "&mobile=true&stops=" + stops.join("+");
+  return url_without_stop_selector + new_query_string
 }
 
 function updateOptions() {
@@ -309,6 +307,10 @@ function updateOptions() {
 }
 
 function QueryStringAsObject() {
+  //if there's no query string, return an empty object
+  if(window.location.href.indexOf('?') == -1){
+    return new Object()
+  }
   var pairs = location.search.slice(1).split('&');
   
   var result = {};
@@ -318,4 +320,15 @@ function QueryStringAsObject() {
   }
 
   return result;
+}
+
+function ObjectAsQueryString(obj){
+  if (Object.keys(obj).length == 0){
+    return ""
+  }
+  var pairs = []
+  for (var key in obj){
+    pairs.push(key + "=" + obj[key])
+  }
+  return '?' + pairs.join('&')
 }
