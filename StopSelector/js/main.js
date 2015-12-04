@@ -326,12 +326,9 @@ function ObjectAsQueryString(obj){
   if (Object.keys(obj).length == 0){
     return ""
   }
-  var query_string = '?'
+  var pairs = []
   for (var key in obj){
-    query_string += '&'
-    query_string += key
-    query_string += '='
-    query_string += obj[key]
+    pairs.push(key + "=" + obj[key])
   }
-  return query_string
+  return '?' + pairs.join('&')
 }
