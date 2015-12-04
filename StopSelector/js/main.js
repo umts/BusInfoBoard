@@ -266,6 +266,12 @@ function removeFade(callback) {
   }
 }
 
+// input is an array of strings.
+// removes the 'StopSelector' portion of the URL;
+// maintains the existing query string,
+// and appends to that query string:
+//   mobile: true,
+//   stops: the stop IDs given
 function busBoardURL(stops) {
   var url = window.location.href;
 
@@ -309,6 +315,10 @@ function updateOptions() {
 }
 
 function QueryStringAsObject() {
+  //if there's no query string, return an empty object
+  if(window.location.href.indexOf("?") == -1){
+    return new Object()
+  }
   var pairs = location.search.slice(1).split('&');
   
   var result = {};
@@ -318,4 +328,18 @@ function QueryStringAsObject() {
   }
 
   return result;
+}
+
+function QueryStringObjectToQueryString(obj){
+  if (Object.keys(obj).length == 0){
+    return ""
+  }
+  var query_string = '?'
+  for (var key in obj){
+    query_string += '&'
+    query_string += key
+    query_string += '='
+    query_string += obj[key]
+  }
+  return query_string
 }
