@@ -274,11 +274,11 @@ function removeFade(callback) {
 //   stops: the stop IDs given
 function busBoardURL(stops) {
   var url = window.location.href;
-  var url_without_stop_selector = url.split("/StopSelector")[0]
+  var url_without_stop_selector = url.split("StopSelector")[0]
 
   var query_obj = QueryStringAsObject()
   query_obj["mobile"] = true
-  query_obj["stops"] = stops
+  query_obj["stops"] = stops.join("+")
   var new_query_string = ObjectAsQueryString(query_obj)
 
   return url_without_stop_selector + new_query_string
