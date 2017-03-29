@@ -42,11 +42,6 @@ h2 {
   .route_short_name {
     margin-left: 20px;
   }
-
-  .alert-icon img {
-    width: 50px;
-    height: 50px;
-  }
 }
 
 .route_arrival {
@@ -87,23 +82,10 @@ h2 {
     font-size: 2.25em;
     text-align: center;
   }
-
-  .alert-icon img {
-    height: 25px;
-    width: 25px;
-  }
 }
 
 .logo {
   display: block;
   margin: 0 auto;
   max-width: 100%;
-}
-
-.alert-icon img {
-  position: absolute;
-  right: 15px;
-  top: 15px;
-  z-index: 10;
-  opacity: 0.75;
 }
