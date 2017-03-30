@@ -351,18 +351,19 @@ function renderRow(info, section) {
     }
   }
   section.append(
-      '<div class="route animated ' + options.start_animation + '" style="background-color: #' + info.Route.Color + '">' +
-      '<div class="row">' + 
-      '<div class="route_short_name ' + short_proportions + '" style="color: #' + info.Route.TextColor + '">' +
-      info.Route.ShortName + " " + 
-      '</div>' + 
-      '<div class="route_long_name ' + long_proportions + '" style="color: #' + info.Route.TextColor + '">' +
-      info.Departure.Trip.InternetServiceDesc + 
-      '</div>' + 
-      '<div class="route_arrival ' + arrival_proportions + '" style="color: #' + info.Route.TextColor + '">' +
-        moment(info.Departure.EDT).from(moment().add(offset, 'hours'), true) +
-      '</div>'+ 
-      '</div>'+ 
+      '<div class="route animated ' + options.start_animation +
+      '" style="background-color: #' + info.Route.Color + '; color: #' + info.Route.TextColor + '">' +
+        '<div class="row">' +
+          '<div class="route_short_name ' + short_proportions + '">' +
+            info.Route.ShortName +
+          '</div>' +
+          '<div class="route_long_name ' + long_proportions + '">' +
+            info.Departure.Trip.InternetServiceDesc +
+          '</div>' +
+          '<div class="route_arrival ' + arrival_proportions + '">' +
+            moment(info.Departure.EDT).from(moment().add(offset, 'hours'), true) +
+          '</div>'+
+        '</div>'+
       '</div>'
       );
 }
