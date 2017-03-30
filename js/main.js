@@ -1,3 +1,18 @@
+/* Copyright 2017 UMass Transit Services
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 // Javascript for parsing and displaying departure information
 var routes = {};
 // Store all the routes we find running at the given stops
@@ -18,7 +33,6 @@ var options =
   interval: 30000,                // default time in ms between refreshes
   title: "",                      // title to display at top of page
   sort: "route",                  // default way to sort departures
-  mobile: false,
   logo_url: ""
 }
 
@@ -53,49 +67,6 @@ $(function(){
   initTitle();
   initBoard();
 });
-
-function loadMessages() {
-  $.ajax({
-    url: options.url + "PublicMessages/GetCurrentMessages",
-    success: function(messages) {
-      var applicable_messages = [];
-      for (var i = 0; i < messages.length; i++) {
-        var message = messages[i];
-        // If one of the routes on the message is in the list of routes we're
-        // looking at, or if it pertains to all routes (no specific routes specified),
-        // display this message
-        if (message.Routes.length == 0){
-          applicable_messages.push(message);
-          continue;
-        }
-
-        for (var j = 0; j < message.Routes.length; j++) {
-          var route_id = message.Routes[j];
-          // This message applies to routes we are looking at
-          if ($.inArray(route_id, all_route_ids) != -1) {
-            applicable_messages.push(message);
-            break;
-          }
-        }
-      }
-      var alertIcon = $('.alert-icon');
-      var alertList = $('.alert-list');
-      alertList.empty();
-      if (applicable_messages.length == 0) {
-        alertIcon.addClass('hide');
-      } else {
-        alertIcon.removeClass('hide');
-      }
-      for (var i = 0; i < applicable_messages.length; i++) {
-        var message = applicable_messages[i];
-        alertList.append('<li>' + message.Message + '</li>');
-      }
-      all_route_ids = [];
-    },
-    timeout: 1000,
-    error: startErrorRoutine
-  });
-}
 
 function startErrorRoutine() {
   stopRefreshing();
@@ -230,16 +201,6 @@ function updateOptions() {
     }
     options.title = title_string;
   }
-
-  var mobile_string = query.mobile;
-  if (typeof mobile_string !== "undefined") {
-    options.mobile = true;
-    options.start_animation = 'none';
-    options.end_animation = 'none';
-    options.interval = 10000;
-    CASCADE_SPEED = 0;
-    END_ANIMATION_TIME = 0;
-  }
 }
 
 function initTitle() {
@@ -346,12 +307,6 @@ function addTables() {
                   addTables(options.stops);
                 } else {
                   stop_index = 0;
-                  // Load the public messages if we're on mobile, but only once
-                  // we've loaded all our routes, which we do iteratively in
-                  // getDepartureInfo
-                  if (options.mobile) {
-                    loadMessages();
-                  }
                 }
               }
             }, CASCADE_SPEED);
