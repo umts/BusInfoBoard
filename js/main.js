@@ -365,11 +365,17 @@ function renderRow(info, section) {
 function departureInterval(edt, offset){
   now = moment();
   edt = moment(edt);
-  nowInMinutes = now.hour() * 60 + now.minute();
+  nowInMinutes = (now.hour() + offset) * 60 + now.minute();
   edtInMinutes = edt.hour() * 60 + edt.minute();
+  // Since EDT is always after now, the only reason the days will be different
+  // is if the EDT is on the next day.
+  if(edt.day() != now.day())
+    edtInMinutes += 60 * 24;
   interval = edtInMinutes - nowInMinutes;
-  if (interval == 0) return 'Now';
-  else if (interval < 60) return interval + ' min';
+  if (interval == 0)
+    return 'Now';
+  else if (interval < 60)
+    return interval + ' min';
   else {
     hours = Math.floor(interval / 60);
     minutes = interval % 60;
