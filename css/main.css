@@ -1,26 +1,51 @@
 html, body {
+  color: white;
   background-color: black;
   font-family: 'Open Sans', sans-serif;
+  box-sizing: border-box;
+  font-size: 5px;
+}
+
+* {
+  box-sizing: inherit;
+}
+
+/* sm */
+@media (min-width: 768px) {
+  html {
+    font-size: 8px;
+  }
+}
+
+/* md */
+@media (min-width: 992px) {
+  html {
+    font-size: 11px;
+  }
+}
+
+/* lg */
+@media (min-width: 1200px) {
+  html {
+    font-size: 14px;
+  }
 }
 
 h1 {
-  color: white;
-  font-size: 4em;
+  font-size: 4rem;
   margin-top: 10px;
   margin-bottom: 10px;
 }
 
 h1.title {
-  color: white;
-  font-size: 4.5em;
+  font-size: 4.5rem;
   margin-top: 15px;
   margin-bottom: 5px;
   text-align: center;
 }
 
 h2 {
-  color: white;
-  font-size: 3em;
+  font-size: 3rem;
   margin-top: 20px;
   margin-bottom: 20px;
 }
@@ -28,64 +53,17 @@ h2 {
 .route {
   border-radius: 10px;
   margin-bottom: 10px;
-  font-size: 3em;
+  font-size: 3rem;
   font-weight: bold;
   overflow: hidden;
-}
-
-
-@media (min-width: 900px) {
-  .route_long_name {
-    margin-right: -40px;
-  }
-  
-  .route_short_name {
-    margin-left: 20px;
-  }
+  padding: 0 20px;
 }
 
 .route_arrival {
   text-align: right;
 }
 
-.hidden {
-  display: none !important;
-}
-
 .connectivity_note {
   text-align: center;
-  font-size: 5em;
-  color: white;
-}
-
-@media (max-width: 900px) {
-  .text-center-xs {
-    text-align: center;
-  }
-
-  .route {
-    font-size: 1em;
-    width: 75%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  h1 {
-    font-size: 2em;
-    margin: 10px auto;
-    text-align: center;
-    width: 75%;
-  }
-
-  h1.title {
-    color: white;
-    font-size: 2.25em;
-    text-align: center;
-  }
-}
-
-.logo {
-  display: block;
-  margin: 0 auto;
-  max-width: 100%;
+  font-size: 5rem;
 }
