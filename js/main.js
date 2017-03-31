@@ -364,12 +364,23 @@ function renderRow(info, section) {
       '<div class="route_long_name ' + long_proportions + ' text-center-xs" style="color: #' + info.Route.TextColor + '">' +
       info.Departure.Trip.InternetServiceDesc + 
       '</div>' + 
-      '<div class="route_arrival ' + arrival_proportions + ' text-center-xs" style="color: #' + info.Route.TextColor + '">' +
-        moment(info.Departure.EDT).from(moment().add(offset, 'hours'), true) +
+      '<div class="route_arrival ' + arrival_proportions + ' text-center-xs" style="color: #' + info.Route.TextColor + '"' +
+      ' data-interval="' + departureInterval(info.Departure.EDT, offset) + '"' +
+      ' data-time="' + departureDisplayTime(info.Departure.EDT) + '"' + 
+      ' data-curr="interval"' + '>' +
+      departureInterval(info.Departure.EDT, offset) +
       '</div>'+ 
       '</div>'+ 
       '</div>'
       );
+}
+
+function departureInterval(edt, offset){
+  return moment(edt).from(moment().add(offset, 'hours'), true);
+}
+
+function departureDisplayTime(edt){
+  return moment(edt).format('h:mm a');
 }
 
 function getDepartureInfo(directions) {
