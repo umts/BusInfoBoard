@@ -24,16 +24,15 @@ var config_url;
 var options =
 {
   url: "http://bustracker.pvta.com/InfoPoint/rest/",
+  title: "",                      // title to display at top of page
   stops: [],
   routes: [],
   excluded_trips: [],
-  start_animation: 'fadeInDown',  // default animate CSS for each row to be added with
-  end_animation: 'fadeOut',       // default animate CSS for everything to be removed with at once
-  work_day_start: 4,              // default time a new transit day starts
-  interval: 30000,                // default time in ms between refreshes
-  title: "",                      // title to display at top of page
   sort: "route",                  // default way to sort departures
-  logo_url: ""
+  interval: 30000,                // default time in ms between refreshes
+  work_day_start: 4,              // default time a new transit day starts
+  start_animation: 'fadeInDown',  // default animate CSS for each row to be added with
+  end_animation: 'fadeOut'        // default animate CSS for everything to be removed with at once
 }
 
 var container;
@@ -105,6 +104,15 @@ function updateOptions() {
 
   var query = QueryStringAsObject();
 
+  var title_string = query.title;
+  if (typeof title_string !== "undefined") {
+    // To handle browsers adding a slash after the query string
+    if (title_string.slice(-1) == "/") {
+      title_string = title_string.slice(0,-1);
+    }
+    options.title = title_string;
+  }
+
   var stop_query_string = query.stops;
   // Check if a query string has been specified
   if (typeof stop_query_string !== "undefined") {
@@ -121,7 +129,6 @@ function updateOptions() {
   }
 
   var route_query_string = query.routes;
-
   if (typeof route_query_string !== "undefined") {
     var query_parts = route_query_string.split("+");
     for (var i = 0; i < query_parts.length; i++) {
@@ -129,52 +136,6 @@ function updateOptions() {
         options.routes.push(query_parts[i]);
       }
     }
-  }
-
-  var sort_query_string = query.sort;
-  
-  if (typeof sort_query_string !== "undefined") {
-    options.sort = sort_query_string;
-  }
-
-  if (options.sort == "time") {
-    sort_function = function(a, b) {
-      return a.Departure.EDT < b.Departure.EDT ? -1 : 1;
-    }
-  } else {
-    sort_function = function(a, b) {
-      return a.Route.ShortName > b.Route.ShortName;
-    }
-  }
-
-  var start_animation_query_string = query.start_animation;
-  if (typeof start_animation_query_string !== 'undefined'){
-    options.start_animation = start_animation_query_string
-  }
-
-  var end_animation_query_string = query.end_animation;
-  if (typeof end_animation_query_string !== 'undefined'){
-    options.end_animation = end_animation_query_string
-  }
-
-  var logo_url_string = query.logo_url;
-  if (typeof logo_url_string !== 'undefined'){
-    if (logo_url_string.slice(-1) == "/") {
-      logo_url_string = logo_url_string.slice(0,-1);
-    }
-    options.logo_url = logo_url_string;
-  }
-
-  // If there are no animations specified, don't allow time for them to execute
-  if (options.start_animation == 'none' && options.end_animation == 'none'){
-    END_ANIMATION_TIME = 0;
-  }
-
-  // Expected value is in seconds, we convert to ms
-  // Minimum allowed is MINIMUM_REFRESH_TIME seconds
-  var interval_query_string = query.interval;
-  if (typeof interval_query_string !== 'undefined'){
-    options.interval = Math.max(MINIMUM_REFRESH_TIME, parseInt(interval_query_string)) * 1000;
   }
 
   var excluded_query_string = query.excluded_trips;
@@ -188,32 +149,53 @@ function updateOptions() {
     }
   }
 
+  var sort_query_string = query.sort;
+  if (typeof sort_query_string !== "undefined") {
+    options.sort = sort_query_string;
+  }
+  if (options.sort == "time") {
+    sort_function = function(a, b) {
+      return a.Departure.EDT < b.Departure.EDT ? -1 : 1;
+    }
+  } else {
+    sort_function = function(a, b) {
+      return a.Route.ShortName > b.Route.ShortName;
+    }
+  }
+
+  // Expected value is in seconds, we convert to ms
+  // Minimum allowed is MINIMUM_REFRESH_TIME seconds
+  var interval_query_string = query.interval;
+  if (typeof interval_query_string !== 'undefined'){
+    options.interval = Math.max(MINIMUM_REFRESH_TIME, parseInt(interval_query_string)) * 1000;
+  }
+
   var work_day_start_string = query.work_day_start;
   if (typeof work_day_start_string !== "undefined") {
     options.work_day_start = parseInt(work_day_start_string) % 24;
   }
 
-  var title_string = query.title;
-  if (typeof title_string !== "undefined") {
-    // To handle browsers adding a slash after the query string
-    if (title_string.slice(-1) == "/") {
-      title_string = title_string.slice(0,-1);
-    }
-    options.title = title_string;
+  var start_animation_query_string = query.start_animation;
+  if (typeof start_animation_query_string !== 'undefined'){
+    options.start_animation = start_animation_query_string
+  }
+
+  var end_animation_query_string = query.end_animation;
+  if (typeof end_animation_query_string !== 'undefined'){
+    options.end_animation = end_animation_query_string
+  }
+
+  // If there are no animations specified, don't allow time for them to execute
+  if (options.start_animation == 'none' && options.end_animation == 'none'){
+    END_ANIMATION_TIME = 0;
   }
 }
 
 function initTitle() {
   var body = $('body');
-
-  if (typeof options.logo_url !== "undefined" && options.logo_url != "") {
-    body.prepend('<img class="logo" src="' + options.logo_url + '">');
-  }
-
   if (typeof options.title !== "undefined" && options.title != "") {
     body.prepend('<h1 class="title">' + options.title + '</h1>');
   }
-
 }
 
 function initBoard() {
