@@ -365,7 +365,7 @@ function renderRow(info, section) {
       info.Departure.Trip.InternetServiceDesc + 
       '</div>' + 
       '<div class="route_arrival ' + arrival_proportions + ' text-center-xs" style="color: #' + info.Route.TextColor + '">' +
-        departureInterval(info.Departure.EDT, offset) +
+      departureInterval(info.Departure.EDT, offset) +
       '</div>'+ 
       '</div>'+ 
       '</div>'
