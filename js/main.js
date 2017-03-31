@@ -365,11 +365,26 @@ function renderRow(info, section) {
       info.Departure.Trip.InternetServiceDesc + 
       '</div>' + 
       '<div class="route_arrival ' + arrival_proportions + ' text-center-xs" style="color: #' + info.Route.TextColor + '">' +
-        moment(info.Departure.EDT).from(moment().add(offset, 'hours'), true) +
+        departureInterval(info.Departure.EDT, offset) +
       '</div>'+ 
       '</div>'+ 
       '</div>'
       );
+}
+
+function departureInterval(edt, offset){
+  now = moment();
+  edt = moment(edt);
+  nowInMinutes = now.hour() * 60 + now.minute();
+  edtInMinutes = edt.hour() * 60 + edt.minute();
+  interval = edtInMinutes - nowInMinutes;
+  if (interval == 0) return 'Now';
+  else if (interval < 60) return interval + ' min';
+  else {
+    hours = Math.floor(interval / 60);
+    minutes = interval % 60;
+    return hours + ' hr ' + minutes + ' min';
+  }
 }
 
 function getDepartureInfo(directions) {
