@@ -385,7 +385,18 @@ function renderRow(info, section) {
 }
 
 function departureInterval(edt, offset){
-  return moment(edt).from(moment().add(offset, 'hours'), true);
+  now = moment();
+  edt = moment(edt);
+  nowInMinutes = now.hour() * 60 + now.minute();
+  edtInMinutes = edt.hour() * 60 + edt.minute();
+  interval = edtInMinutes - nowInMinutes;
+  if (interval == 0) return 'Now';
+  else if (interval < 60) return interval + ' min';
+  else {
+    hours = Math.floor(interval / 60);
+    minutes = interval % 60;
+    return hours + ' hr ' + minutes + ' min';
+  }
 }
 
 function departureDisplayTime(edt){
