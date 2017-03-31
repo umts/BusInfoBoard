@@ -48,6 +48,18 @@ var END_ANIMATION_TIME = 500; // the amount of time we give the ending animate C
 // incorrect when switching between DST and...not DST.
 var dst_at_start;
 
+moment.locale('en', {
+  relativeTime : {
+    future: "in %s",
+    past: "%s ago",
+    s: "NOW",
+    m: "1 min",
+    mm: "%d mins",
+    h: "1 hr",
+    hh: "%d hrs"
+  }
+});
+
 function QueryStringAsObject() {
   var pairs = location.search.slice(1).split('&');
   
