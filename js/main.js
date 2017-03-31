@@ -49,6 +49,11 @@ var END_ANIMATION_TIME = 500; // the amount of time we give the ending animate C
 // incorrect when switching between DST and...not DST.
 var dst_at_start;
 
+// Whether we're currently displaying the departure interval or the departure time.
+var currentTimeDisplay;
+// The ID of the interval process which is alternating the display.
+var alternateID;
+
 function QueryStringAsObject() {
   var pairs = location.search.slice(1).split('&');
   
@@ -239,12 +244,14 @@ function startRefreshing() {
     // Since we wait END_ANIMATION_TIME before emptying the page, we wait this
     // long before adding in the new tables.
     setTimeout(function(){
+      currentTimeDisplay = 'interval';
       addTables();
     }, END_ANIMATION_TIME)
   }, options.interval);
 }
 
 function stopRefreshing() {
+  clearInterval(alternateID);
   clearInterval(refresh_id);
 }
 
@@ -310,6 +317,7 @@ function addTables() {
                 }
               }
             }, CASCADE_SPEED);
+          alternateID = setInterval(alternateTimeDisplay, 3000);
       },
       dataType: 'json',
       error: startErrorRoutine});
@@ -320,6 +328,8 @@ function addTables() {
 
 //removes the tables in preparation to load in the new ones. fancy CSS magic.
 function removeTables() {
+  // stop alternating between time and interval
+  clearInterval(alternateID);
   //fade out stops and their departures
   $('h1').addClass(options.end_animation);
   $('.route').addClass(options.end_animation);
@@ -366,8 +376,7 @@ function renderRow(info, section) {
       '</div>' + 
       '<div class="route_arrival ' + arrival_proportions + ' text-center-xs" style="color: #' + info.Route.TextColor + '"' +
       ' data-interval="' + departureInterval(info.Departure.EDT, offset) + '"' +
-      ' data-time="' + departureDisplayTime(info.Departure.EDT) + '"' + 
-      ' data-curr="interval"' + '>' +
+      ' data-time="' + departureDisplayTime(info.Departure.EDT) + '">' + 
       departureInterval(info.Departure.EDT, offset) +
       '</div>'+ 
       '</div>'+ 
@@ -381,6 +390,14 @@ function departureInterval(edt, offset){
 
 function departureDisplayTime(edt){
   return moment(edt).format('h:mm a');
+}
+
+function alternateTimeDisplay(){
+  if(currentTimeDisplay == 'interval') currentTimeDisplay = 'time';
+  else currentTimeDisplay = 'interval';
+  $('.route_arrival').each(function(){
+    $(this).text($(this).data(currentTimeDisplay));
+  });
 }
 
 function getDepartureInfo(directions) {
