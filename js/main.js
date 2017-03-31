@@ -262,7 +262,7 @@ function addTables() {
         url: options.url + "stopdepartures/get/" + options.stops[stop_index],
         success: function(departure_data) {
           // Draw the header for each stop
-          section.append('<h1 class="animated ' + options.start_animation + '">' + stop_info.Name + "</h1>");
+          section.append('<h1 class="animated ' + options.start_animation + '">' + stop_info.Description + "</h1>");
           departure_data[0] = departure_data[0] || {RouteDirections: []}
           var infos = getDepartureInfo(departure_data[0].RouteDirections);
           var done = isDone(departure_data[0].RouteDirections);
