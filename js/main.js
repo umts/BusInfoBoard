@@ -354,7 +354,7 @@ function renderRow(info, section) {
         '<div class="route_long_name ' + long_proportions + '">' +
           info.Departure.Trip.InternetServiceDesc +
         '</div>' +
-        '<div class="route_arrival ' + arrival_proportions + '" data-interval="' + interval + '" data-time="' + time + '">' +
+        '<div class="route_arrival ' + arrival_proportions + '">' +
           departureInterval(info.Departure.EDT, offset) +
         '</div>'+
       '</div>'+
@@ -363,19 +363,24 @@ function renderRow(info, section) {
 }
 
 function departureInterval(edt, offset){
-  return moment(edt).from(moment().add(offset, 'hours'), true);
-}
-
-function departureDisplayTime(edt){
-  return moment(edt).format('h:mm a');
-}
-
-function alternateTimeDisplay(){
-  if(currentTimeDisplay == 'interval') currentTimeDisplay = 'time';
-  else currentTimeDisplay = 'interval';
-  $('.route_arrival').each(function(){
-    $(this).text($(this).data(currentTimeDisplay));
-  });
+  now = moment();
+  edt = moment(edt);
+  nowInMinutes = (now.hour() + offset) * 60 + now.minute();
+  edtInMinutes = edt.hour() * 60 + edt.minute();
+  // Since EDT is always after now, the only reason the days will be different
+  // is if the EDT is on the next day.
+  if(edt.day() != now.day())
+    edtInMinutes += 60 * 24;
+  interval = edtInMinutes - nowInMinutes;
+  if (interval == 0)
+    return 'Now';
+  else if (interval < 60)
+    return interval + ' min';
+  else {
+    hours = Math.floor(interval / 60);
+    minutes = interval % 60;
+    return hours + ' hr ' + minutes + ' min';
+  }
 }
 
 function getDepartureInfo(directions) {
