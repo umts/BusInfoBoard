@@ -48,6 +48,11 @@ var END_ANIMATION_TIME = 500; // the amount of time we give the ending animate C
 // incorrect when switching between DST and...not DST.
 var dst_at_start;
 
+// Whether we're currently displaying the departure interval or the departure time.
+var currentTimeDisplay;
+// The ID of the interval process which is alternating the display.
+var alternateID;
+
 function QueryStringAsObject() {
   var pairs = location.search.slice(1).split('&');
   
@@ -221,12 +226,14 @@ function startRefreshing() {
     // Since we wait END_ANIMATION_TIME before emptying the page, we wait this
     // long before adding in the new tables.
     setTimeout(function(){
+      currentTimeDisplay = 'interval';
       addTables();
     }, END_ANIMATION_TIME)
   }, options.interval);
 }
 
 function stopRefreshing() {
+  clearInterval(alternateID);
   clearInterval(refresh_id);
 }
 
@@ -262,7 +269,7 @@ function addTables() {
         url: options.url + "stopdepartures/get/" + options.stops[stop_index],
         success: function(departure_data) {
           // Draw the header for each stop
-          section.append('<h1 class="animated ' + options.start_animation + '">' + stop_info.Name + "</h1>");
+          section.append('<h1 class="animated ' + options.start_animation + '">' + stop_info.Description + "</h1>");
           departure_data[0] = departure_data[0] || {RouteDirections: []}
           var infos = getDepartureInfo(departure_data[0].RouteDirections);
           var done = isDone(departure_data[0].RouteDirections);
@@ -292,6 +299,7 @@ function addTables() {
                 }
               }
             }, CASCADE_SPEED);
+          alternateID = setInterval(alternateTimeDisplay, 3000);
       },
       dataType: 'json',
       error: startErrorRoutine});
@@ -302,6 +310,8 @@ function addTables() {
 
 //removes the tables in preparation to load in the new ones. fancy CSS magic.
 function removeTables() {
+  // stop alternating between time and interval
+  clearInterval(alternateID);
   //fade out stops and their departures
   $('h1').addClass(options.end_animation);
   $('.route').addClass(options.end_animation);
@@ -332,6 +342,8 @@ function renderRow(info, section) {
       offset = -1;
     }
   }
+  var interval = departureInterval(info.Departure.EDT, offset);
+  var time = departureDisplayTime(info.Departure.EDT);
   section.append(
     '<div class="route animated ' + options.start_animation +
     '" style="background-color: #' + info.Route.Color + '; color: #' + info.Route.TextColor + '">' +
