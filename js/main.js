@@ -343,7 +343,6 @@ function renderRow(info, section) {
     }
   }
   var interval = departureInterval(info.Departure.EDT, offset);
-  var time = departureDisplayTime(info.Departure.EDT);
   section.append(
     '<div class="route animated ' + options.start_animation +
     '" style="background-color: #' + info.Route.Color + '; color: #' + info.Route.TextColor + '">' +
