@@ -343,6 +343,7 @@ function renderRow(info, section) {
     }
   }
   var interval = departureInterval(info.Departure.EDT, offset);
+  var time = departureDisplayTime(info.Departure.EDT);
   section.append(
     '<div class="route animated ' + options.start_animation +
     '" style="background-color: #' + info.Route.Color + '; color: #' + info.Route.TextColor + '">' +
@@ -353,7 +354,7 @@ function renderRow(info, section) {
         '<div class="route_long_name ' + long_proportions + '">' +
           info.Departure.Trip.InternetServiceDesc +
         '</div>' +
-        '<div class="route_arrival ' + arrival_proportions + '">' +
+        '<div class="route_arrival ' + arrival_proportions + '" data-time="' + time + '" data-interval="' + interval + '">' +
            interval +
         '</div>'+
       '</div>'+
@@ -380,6 +381,18 @@ function departureInterval(edt, offset){
     minutes = interval % 60;
     return hours + ' hr ' + minutes + ' min';
   }
+}
+
+function departureDisplayTime(edt){
+  return moment(edt).format('h:mm a');
+}
+
+function alternateTimeDisplay(){
+  if(currentTimeDisplay == 'interval') currentTimeDisplay = 'time';
+  else currentTimeDisplay = 'interval';
+  $('.route_arrival').each(function(){
+    $(this).text($(this).data(currentTimeDisplay));
+  })
 }
 
 function getDepartureInfo(directions) {
@@ -434,3 +447,4 @@ function isDone(directions) {
   // If there are no departures and they all have isDone == true, we're done
   return true;
 }
+
