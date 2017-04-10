@@ -70,6 +70,7 @@ $(function(){
   updateOptions();
   initTitle();
   initBoard();
+  setInterval(checkOutdatedSource, 1000 * 3600); // every hour
 });
 
 function startErrorRoutine() {
@@ -433,4 +434,16 @@ function isDone(directions) {
   }
   // If there are no departures and they all have isDone == true, we're done
   return true;
+}
+
+function checkOutdatedSource(){
+  $.ajax({
+    url: 'https://api.github.com/repos/umts/BusInfoBoard',
+    success: function(repoData){
+      lastRepoUpdate = moment(repoData.updated_at);
+      lastSourceUpdate = moment(document.lastModified);
+      if(lastRepoUpdate.isAfter(lastSourceUpdate))
+        window.location.reload();
+    }
+  });
 }
