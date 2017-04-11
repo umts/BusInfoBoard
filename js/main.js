@@ -213,6 +213,7 @@ function initBoard() {
       routes[route_data[i].RouteId] = route_data[i];
     }
     addTables();
+    alternateID = setInterval(alternateTimeDisplay, 3000);
     startRefreshing();
   },
   dataType: 'json',
@@ -228,6 +229,7 @@ function startRefreshing() {
     setTimeout(function(){
       currentTimeDisplay = 'interval';
       addTables();
+      alternateID = setInterval(alternateTimeDisplay, 3000);
     }, END_ANIMATION_TIME)
   }, options.interval);
 }
@@ -299,7 +301,6 @@ function addTables() {
                 }
               }
             }, CASCADE_SPEED);
-          alternateID = setInterval(alternateTimeDisplay, 3000);
       },
       dataType: 'json',
       error: startErrorRoutine});
