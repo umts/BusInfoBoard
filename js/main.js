@@ -32,7 +32,9 @@ var options =
   interval: 30000,                // default time in ms between refreshes
   work_day_start: 4,              // default time a new transit day starts
   start_animation: 'fadeInDown',  // default animate CSS for each row to be added with
-  end_animation: 'fadeOut'        // default animate CSS for everything to be removed with at once
+  end_animation: 'fadeOut',       // default animate CSS for everything to be removed with at once
+  alternateInterval: 3000,        // default time in ms between alternating time and interval
+  disableAlternation: false,      // whether alternation should be disabled
 }
 
 var container;
@@ -49,7 +51,7 @@ var END_ANIMATION_TIME = 500; // the amount of time we give the ending animate C
 var dst_at_start;
 
 // Whether we're currently displaying the departure interval or the departure time.
-var currentTimeDisplay;
+var currentTimeDisplay = 'interval';
 // The ID of the interval process which is alternating the display.
 var alternateID;
 
@@ -175,6 +177,15 @@ function updateOptions() {
     options.interval = Math.max(MINIMUM_REFRESH_TIME, parseInt(interval_query_string)) * 1000;
   }
 
+  // Bound alternateInterval between 1 second and half of the refresh interval.
+  var alternateIntervalQueryString = query.alternate_interval;
+  if (typeof alternateIntervalQueryString !== 'undefined'){
+    var alternateInterval = parseInt(alternateIntervalQueryString) * 1000;
+    alternateInterval = Math.max(1000, alternateInterval);
+    alternateInterval = Math.min(alternateInterval, options.interval / 2);
+    options.alternateInterval = alternateInterval;
+  }
+
   var work_day_start_string = query.work_day_start;
   if (typeof work_day_start_string !== "undefined") {
     options.work_day_start = parseInt(work_day_start_string) % 24;
@@ -193,6 +204,18 @@ function updateOptions() {
   // If there are no animations specified, don't allow time for them to execute
   if (options.start_animation == 'none' && options.end_animation == 'none'){
     END_ANIMATION_TIME = 0;
+  }
+
+  var disableAlternationQueryString = query.disable_alternation;
+  if (typeof disableAlternationQueryString !== 'undefined') {
+    options.disableAlternation = disableAlternationQueryString == 'true';
+  }
+
+  var defaultTimeDisplayQueryString = query.default_time_display;
+  if (typeof defaultTimeDisplayQueryString !== 'undefined'){
+    if(['interval', 'time'].indexOf(defaultTimeDisplayQueryString) !== -1){
+      currentTimeDisplay = defaultTimeDisplayQueryString;
+    }
   }
 }
 
@@ -213,7 +236,7 @@ function initBoard() {
       routes[route_data[i].RouteId] = route_data[i];
     }
     addTables();
-    alternateID = setInterval(alternateTimeDisplay, 3000);
+    alternateID = setInterval(alternateTimeDisplay, options.alternateInterval);
     startRefreshing();
   },
   dataType: 'json',
@@ -227,9 +250,8 @@ function startRefreshing() {
     // Since we wait END_ANIMATION_TIME before emptying the page, we wait this
     // long before adding in the new tables.
     setTimeout(function(){
-      currentTimeDisplay = 'interval';
       addTables();
-      alternateID = setInterval(alternateTimeDisplay, 3000);
+      alternateID = setInterval(alternateTimeDisplay, options.alternateInterval);
     }, END_ANIMATION_TIME)
   }, options.interval);
 }
@@ -345,6 +367,9 @@ function renderRow(info, section) {
   }
   var interval = departureInterval(info.Departure.EDT, offset);
   var time = departureDisplayTime(info.Departure.EDT);
+  var startingTimeDisplay;
+  if(currentTimeDisplay == 'interval') startingTimeDisplay = interval;
+  else startingTimeDisplay = time;
   section.append(
     '<div class="route animated ' + options.start_animation +
     '" style="background-color: #' + info.Route.Color + '; color: #' + info.Route.TextColor + '">' +
@@ -356,7 +381,7 @@ function renderRow(info, section) {
           info.Departure.Trip.InternetServiceDesc +
         '</div>' +
         '<div class="route_arrival ' + arrival_proportions + '" data-time="' + time + '" data-interval="' + interval + '">' +
-           interval +
+           startingTimeDisplay +
         '</div>'+
       '</div>'+
     '</div>'
@@ -389,11 +414,13 @@ function departureDisplayTime(edt){
 }
 
 function alternateTimeDisplay(){
-  if(currentTimeDisplay == 'interval') currentTimeDisplay = 'time';
-  else currentTimeDisplay = 'interval';
-  $('.route_arrival').each(function(){
-    $(this).text($(this).data(currentTimeDisplay));
-  })
+  if(!options.disableAlternation){
+    if(currentTimeDisplay == 'interval') currentTimeDisplay = 'time';
+    else currentTimeDisplay = 'interval';
+    $('.route_arrival').each(function(){
+      $(this).text($(this).data(currentTimeDisplay));
+    })
+  }
 }
 
 function getDepartureInfo(directions) {
