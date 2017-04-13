@@ -54,6 +54,8 @@ Query String
   between displaying the time of a departure, and the relative time
   (e.g. 3 min). The minimum value is 1 second, and the maximum value is half
   the refresh interval. The default value is 3 seconds.
+- `disable_alternation=true` allows you to disable the alternation between
+  absolute and relative time.
 
 Config URL
 ----------

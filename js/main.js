@@ -33,7 +33,8 @@ var options =
   work_day_start: 4,              // default time a new transit day starts
   start_animation: 'fadeInDown',  // default animate CSS for each row to be added with
   end_animation: 'fadeOut',       // default animate CSS for everything to be removed with at once
-  alternateInterval: 3000         // default time in ms between alternating time and interval
+  alternateInterval: 3000,        // default time in ms between alternating time and interval
+  disableAlternation: false,      // whether alternation should be disabled
 }
 
 var container;
@@ -203,6 +204,11 @@ function updateOptions() {
   // If there are no animations specified, don't allow time for them to execute
   if (options.start_animation == 'none' && options.end_animation == 'none'){
     END_ANIMATION_TIME = 0;
+  }
+
+  var disableAlternationQueryString = query.disable_alternation;
+  if (typeof disableAlternationQueryString !== 'undefined') {
+    options.disableAlternation = disableAlternationQueryString == 'true';
   }
 }
 
@@ -399,11 +405,13 @@ function departureDisplayTime(edt){
 }
 
 function alternateTimeDisplay(){
-  if(currentTimeDisplay == 'interval') currentTimeDisplay = 'time';
-  else currentTimeDisplay = 'interval';
-  $('.route_arrival').each(function(){
-    $(this).text($(this).data(currentTimeDisplay));
-  })
+  if(!options.disableAlternation){
+    if(currentTimeDisplay == 'interval') currentTimeDisplay = 'time';
+    else currentTimeDisplay = 'interval';
+    $('.route_arrival').each(function(){
+      $(this).text($(this).data(currentTimeDisplay));
+    })
+  }
 }
 
 function getDepartureInfo(directions) {
