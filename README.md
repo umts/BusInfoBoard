@@ -50,6 +50,16 @@ Query String
 - `?end_animation=someAnimation` specifies which animation to use when
   clearing the display for refresh. This should probably be an "exit"
   animation; the default is `fadeOut`.
+- `?alternate_interval=3` specifies how frequently the display should alternate
+  between displaying the time of a departure, and the relative time
+  (e.g. 3 min). The minimum value is 1 second, and the maximum value is half
+  the refresh interval. The default value is 3 seconds.
+- `?disable_alternation=true` allows you to disable the alternation between
+  absolute and relative time.
+- `?default_time_display=interval` allows you to configure what the starting
+  time display will be. Accepted values are 'interval' for relative time,
+  and 'time' for absolute time. If alternation is disabled, this is the only
+  time which will display.
 
 Config URL
 ----------
