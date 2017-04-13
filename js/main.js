@@ -385,7 +385,7 @@ function departureInterval(edt, offset){
 }
 
 function departureDisplayTime(edt){
-  return moment(edt).format('h:mm a');
+  return moment.parseZone(edt).format('h:mm a');
 }
 
 function alternateTimeDisplay(){
