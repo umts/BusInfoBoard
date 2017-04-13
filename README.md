@@ -50,7 +50,7 @@ Query String
 - `?end_animation=someAnimation` specifies which animation to use when
   clearing the display for refresh. This should probably be an "exit"
   animation; the default is `fadeOut`.
-- `?alternate_interval=3` specified how frequently the display should alternate
+- `?alternate_interval=3` specifies how frequently the display should alternate
   between displaying the time of a departure, and the relative time
   (e.g. 3 min). The minimum value is 1 second, and the maximum value is half
   the refresh interval. The default value is 3 seconds.
