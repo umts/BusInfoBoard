@@ -51,7 +51,7 @@ var END_ANIMATION_TIME = 500; // the amount of time we give the ending animate C
 var dst_at_start;
 
 // Whether we're currently displaying the departure interval or the departure time.
-var currentTimeDisplay;
+var currentTimeDisplay = 'interval';
 // The ID of the interval process which is alternating the display.
 var alternateID;
 
@@ -210,6 +210,13 @@ function updateOptions() {
   if (typeof disableAlternationQueryString !== 'undefined') {
     options.disableAlternation = disableAlternationQueryString == 'true';
   }
+
+  var defaultTimeDisplayQueryString = query.default_time_display;
+  if (typeof defaultTimeDisplayQueryString !== 'undefined'){
+    if(['interval', 'time'].indexOf(defaultTimeDisplayQueryString) !== -1){
+      currentTimeDisplay = defaultTimeDisplayQueryString;
+    }
+  }
 }
 
 function initTitle() {
@@ -243,7 +250,6 @@ function startRefreshing() {
     // Since we wait END_ANIMATION_TIME before emptying the page, we wait this
     // long before adding in the new tables.
     setTimeout(function(){
-      currentTimeDisplay = 'interval';
       addTables();
       alternateID = setInterval(alternateTimeDisplay, options.alternateInterval);
     }, END_ANIMATION_TIME)
@@ -361,6 +367,9 @@ function renderRow(info, section) {
   }
   var interval = departureInterval(info.Departure.EDT, offset);
   var time = departureDisplayTime(info.Departure.EDT);
+  var currentTime;
+  if(currentTimeDisplay == 'interval') currentTime = interval;
+  else currentTime = time;
   section.append(
     '<div class="route animated ' + options.start_animation +
     '" style="background-color: #' + info.Route.Color + '; color: #' + info.Route.TextColor + '">' +
@@ -372,7 +381,7 @@ function renderRow(info, section) {
           info.Departure.Trip.InternetServiceDesc +
         '</div>' +
         '<div class="route_arrival ' + arrival_proportions + '" data-time="' + time + '" data-interval="' + interval + '">' +
-           interval +
+           currentTime +
         '</div>'+
       '</div>'+
     '</div>'

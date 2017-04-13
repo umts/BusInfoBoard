@@ -56,6 +56,10 @@ Query String
   the refresh interval. The default value is 3 seconds.
 - `disable_alternation=true` allows you to disable the alternation between
   absolute and relative time.
+- `default_time_display=interval` allows you to configure what the starting
+  time display will be. Accepted values are 'interval' for relative time,
+  and 'time' for absolute time. If alternation is disabled, this is the only
+  time which will display.
 
 Config URL
 ----------
