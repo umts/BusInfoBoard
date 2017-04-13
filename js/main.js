@@ -367,9 +367,9 @@ function renderRow(info, section) {
   }
   var interval = departureInterval(info.Departure.EDT, offset);
   var time = departureDisplayTime(info.Departure.EDT);
-  var currentTime;
-  if(currentTimeDisplay == 'interval') currentTime = interval;
-  else currentTime = time;
+  var startingTimeDisplay;
+  if(currentTimeDisplay == 'interval') startingTimeDisplay = interval;
+  else startingTimeDisplay = time;
   section.append(
     '<div class="route animated ' + options.start_animation +
     '" style="background-color: #' + info.Route.Color + '; color: #' + info.Route.TextColor + '">' +
@@ -381,7 +381,7 @@ function renderRow(info, section) {
           info.Departure.Trip.InternetServiceDesc +
         '</div>' +
         '<div class="route_arrival ' + arrival_proportions + '" data-time="' + time + '" data-interval="' + interval + '">' +
-           currentTime +
+           startingTimeDisplay +
         '</div>'+
       '</div>'+
     '</div>'
