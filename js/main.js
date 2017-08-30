@@ -23,7 +23,7 @@ var config_url;
 
 var options =
 {
-  url: "http://bustracker.pvta.com/InfoPoint/rest/",
+  url: "https://bustracker.pvta.com/InfoPoint/rest/",
   title: "",                      // title to display at top of page
   stops: [],
   routes: [],
