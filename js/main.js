@@ -166,7 +166,7 @@ function updateOptions() {
     }
   } else {
     sort_function = function(a, b) {
-      return a.Route.ShortName > b.Route.ShortName;
+      return a.Route.RouteAbbreviation > b.Route.RouteAbbreviation;
     }
   }
 
@@ -374,8 +374,8 @@ function renderRow(info, section) {
     '<div class="route animated ' + options.start_animation +
     '" style="background-color: #' + info.Route.Color + '; color: #' + info.Route.TextColor + '">' +
       '<div class="row">' +
-        '<div class="route_short_name ' + short_proportions + '">' +
-          info.Route.ShortName +
+        '<div class="route_abbreviation ' + short_proportions + '">' +
+          info.Route.RouteAbbreviation +
         '</div>' +
         '<div class="route_long_name ' + long_proportions + '">' +
           info.Departure.Trip.InternetServiceDesc +
@@ -441,7 +441,7 @@ function getDepartureInfo(directions) {
       //If the departure has a unique InternetServiceDesc,
       if ($.inArray(departure.Trip.InternetServiceDesc, unique_ISDs) == -1
           //and if it's in the allowed routes,
-          && (options.routes.length == 0 || $.inArray(route.ShortName, options.routes) != -1)
+          && (options.routes.length == 0 || $.inArray(route.RouteAbbreviation, options.routes) != -1)
           //and if it's not in the excluded trips
           && (options.excluded_trips.length == 0 || $.inArray(departure.Trip.InternetServiceDesc, options.excluded_trips) == -1)
           //and if it's in the future,
