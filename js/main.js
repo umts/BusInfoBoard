@@ -35,6 +35,7 @@ var options =
   end_animation: 'fadeOut',       // default animate CSS for everything to be removed with at once
   alternateInterval: 3000,        // default time in ms between alternating time and interval
   disableAlternation: false,      // whether alternation should be disabled
+  showMessages: true,             // whether to show messages - 'yes', 'no', or 'only' for no departures
 }
 
 var container;
@@ -217,6 +218,8 @@ function updateOptions() {
       currentTimeDisplay = defaultTimeDisplayQueryString;
     }
   }
+
+  options.showMessages = query.show_messages;
 }
 
 function initTitle() {
@@ -310,7 +313,8 @@ function addTables() {
           var id = setInterval(function() {
               // If we still have rows to render
               if (i < infos.length) {
-                renderRow(infos[i], section);
+                if(options.showMessages !== 'only')
+                  renderRow(infos[i], section);
                 i++;
               } else { // If not, clear out the timer and move onto the next route
                 clearTimeout(id);
@@ -319,7 +323,8 @@ function addTables() {
                 if (stop_index < options.stops.length) {
                   addTables(options.stops);
                 } else {
-                  addMessages();
+                  if(options.showMessages !== 'no')
+                    addMessages();
                   stop_index = 0;
                 }
               }
@@ -351,7 +356,7 @@ function addMessages(){
         }
       }
       if(applicableMessages.length > 0){
-        container.prepend('<div class=message-holder></div>')
+        container.append('<div class=message-holder></div>')
         for(var i = 0; i < applicableMessages.length; i++){
           var message = applicableMessages[i];
           $('.message-holder').append('<p>' + message.Message);
