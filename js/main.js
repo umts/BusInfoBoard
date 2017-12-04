@@ -319,6 +319,7 @@ function addTables() {
                 if (stop_index < options.stops.length) {
                   addTables(options.stops);
                 } else {
+                  addMessages();
                   stop_index = 0;
                 }
               }
@@ -329,6 +330,35 @@ function addTables() {
     },
     dataType: 'json',
     error: startErrorRoutine});
+}
+
+function addMessages(){
+  $.ajax({
+    url: options.url + '/publicmessages/getcurrentmessages',
+    dataType: 'json',
+    success: function(messages){
+      var applicableMessages = []
+      // For each message, determine if it applies to the routes which service
+      // the stops in question.
+      for(var i = 0; i < messages.length; i++){
+        var message = messages[i];
+        // Check each route ID to see if the message applies to it.
+        for(var j = 0; j < all_route_ids.length; j++){
+          if($.inArray(all_route_ids[j], message.Routes) !== -1){
+            applicableMessages.push(message);
+            break;
+          }
+        }
+      }
+      if(applicableMessages.length > 0){
+        container.prepend('<div class=message-holder></div>')
+        for(var i = 0; i < applicableMessages.length; i++){
+          var message = applicableMessages[i];
+          $('.message-holder').append('<p>' + message.Message);
+        }
+      }
+    }
+  })
 }
 
 //removes the tables in preparation to load in the new ones. fancy CSS magic.
