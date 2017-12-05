@@ -35,7 +35,7 @@ var options =
   end_animation: 'fadeOut',       // default animate CSS for everything to be removed with at once
   alternateInterval: 3000,        // default time in ms between alternating time and interval
   disableAlternation: false,      // whether alternation should be disabled
-  showMessages: 'yes',             // whether to show messages - 'yes', 'no', or 'only' for no departures
+  showMessages: 'yes',            // whether to show messages - 'yes', 'no', or 'only' for no departures
 }
 
 var container;
