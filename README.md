@@ -60,6 +60,10 @@ Query String
   time display will be. Accepted values are 'interval' for relative time,
   and 'time' for absolute time. If alternation is disabled, this is the only
   time which will display.
+- `?show_messages=[yes,no,only]` allows you to configure whether public alert
+  messages are shown when they apply to the routes serviced by the stop(s) in
+  question. 'yes' shows messages in addition to departure times; 'no' does not,
+  and 'only' shows only messages, not departures.
 
 Config URL
 ----------
