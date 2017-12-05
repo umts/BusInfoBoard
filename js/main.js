@@ -362,7 +362,7 @@ function addMessages(){
           var message = applicableMessages[i];
           $('.message-holder').append('<p>' + message.Message);
         }
-        $('.message-holder').show().addClass(options.start_animation);
+        $('.message-holder').addClass(options.start_animation);
       }
     }
   });
