@@ -41,6 +41,7 @@ var options =
 var container;
 var sort_function;
 var refresh_id;
+var messages;
 var stop_index = 0;
 
 var MINIMUM_REFRESH_TIME = 5; // minimum number of seconds allowed for user input
@@ -324,7 +325,7 @@ function addTables() {
                   addTables(options.stops);
                 } else {
                   if(options.showMessages !== 'no')
-                    addMessages();
+                    setTimeout(addMessages, CASCADE_SPEED);
                   stop_index = 0;
                 }
               }
@@ -342,7 +343,7 @@ function addMessages(){
     url: options.url + '/publicmessages/getcurrentmessages',
     dataType: 'json',
     success: function(messages){
-      var applicableMessages = []
+      var applicableMessages = [];
       // For each message, determine if it applies to the routes which service
       // the stops in question.
       for(var i = 0; i < messages.length; i++){
@@ -356,14 +357,15 @@ function addMessages(){
         }
       }
       if(applicableMessages.length > 0){
-        container.append('<div class=message-holder></div>')
+        container.append('<div class="message-holder animated"></div>')
         for(var i = 0; i < applicableMessages.length; i++){
           var message = applicableMessages[i];
           $('.message-holder').append('<p>' + message.Message);
         }
+        $('.message-holder').show().addClass(options.start_animation);
       }
     }
-  })
+  });
 }
 
 //removes the tables in preparation to load in the new ones. fancy CSS magic.
@@ -373,6 +375,7 @@ function removeTables() {
   //fade out stops and their departures
   $('h1').addClass(options.end_animation);
   $('.route').addClass(options.end_animation);
+  $('.message-holder').addClass(options.end_animation);
   //once we've given that END_ANIMATION_TIME to work, remove everything.
   setTimeout(function(){
     container.empty()
