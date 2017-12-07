@@ -366,7 +366,15 @@ function addMessages(){
         container.append('<div class="message-holder animated"></div>')
         for(var i = 0; i < applicableMessages.length; i++){
           var message = applicableMessages[i];
-          $('.message-holder').append('<p>' + message.Message);
+          var routeNames = [];
+          for(j = 0; j < message.Routes.length; j++){
+            routeNames.push(routes[message.Routes[j]].ShortName);
+          }
+          if(message.Routes.length > 0){
+            var messageText = routeNames.join(', ') + ': ' + message.Message;
+          }
+          else var messageText = message.Message;
+          $('.message-holder').append('<p>' + messageText);
         }
         $('.message-holder').addClass(options.start_animation);
       }
