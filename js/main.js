@@ -348,11 +348,17 @@ function addMessages(){
       // the stops in question.
       for(var i = 0; i < messages.length; i++){
         var message = messages[i];
-        // Check each route ID to see if the message applies to it.
-        for(var j = 0; j < all_route_ids.length; j++){
-          if($.inArray(all_route_ids[j], message.Routes) !== -1){
-            applicableMessages.push(message);
-            break;
+        // Show messages which don't apply to any route.
+        if(message.Routes.length == 0){
+          applicableMessages.push(message);
+        }
+        else{
+          // Check each route ID to see if the message applies to it.
+          for(var j = 0; j < all_route_ids.length; j++){
+            if($.inArray(all_route_ids[j], message.Routes) !== -1){
+              applicableMessages.push(message);
+              break;
+            }
           }
         }
       }
