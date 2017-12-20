@@ -35,11 +35,13 @@ var options =
   end_animation: 'fadeOut',       // default animate CSS for everything to be removed with at once
   alternateInterval: 3000,        // default time in ms between alternating time and interval
   disableAlternation: false,      // whether alternation should be disabled
+  showMessages: 'yes',            // whether to show messages - 'yes', 'no', or 'only' for no departures
 }
 
 var container;
 var sort_function;
 var refresh_id;
+var messages;
 var stop_index = 0;
 
 var MINIMUM_REFRESH_TIME = 5; // minimum number of seconds allowed for user input
@@ -217,6 +219,8 @@ function updateOptions() {
       currentTimeDisplay = defaultTimeDisplayQueryString;
     }
   }
+
+  options.showMessages = query.show_messages;
 }
 
 function initTitle() {
@@ -310,7 +314,8 @@ function addTables() {
           var id = setInterval(function() {
               // If we still have rows to render
               if (i < infos.length) {
-                renderRow(infos[i], section);
+                if(options.showMessages !== 'only')
+                  renderRow(infos[i], section);
                 i++;
               } else { // If not, clear out the timer and move onto the next route
                 clearTimeout(id);
@@ -319,6 +324,8 @@ function addTables() {
                 if (stop_index < options.stops.length) {
                   addTables(options.stops);
                 } else {
+                  if(options.showMessages !== 'no')
+                    setTimeout(addMessages, CASCADE_SPEED);
                   stop_index = 0;
                 }
               }
@@ -331,6 +338,50 @@ function addTables() {
     error: startErrorRoutine});
 }
 
+function addMessages(){
+  $.ajax({
+    url: options.url + '/publicmessages/getcurrentmessages',
+    dataType: 'json',
+    success: function(messages){
+      var applicableMessages = [];
+      // For each message, determine if it applies to the routes which service
+      // the stops in question.
+      for(var i = 0; i < messages.length; i++){
+        var message = messages[i];
+        // Show messages which don't apply to any route.
+        if(message.Routes.length == 0){
+          applicableMessages.push(message);
+        }
+        else{
+          // Check each route ID to see if the message applies to it.
+          for(var j = 0; j < all_route_ids.length; j++){
+            if($.inArray(all_route_ids[j], message.Routes) !== -1){
+              applicableMessages.push(message);
+              break;
+            }
+          }
+        }
+      }
+      if(applicableMessages.length > 0){
+        container.append('<div class="message-holder animated"></div>')
+        for(var i = 0; i < applicableMessages.length; i++){
+          var message = applicableMessages[i];
+          var routeNames = [];
+          for(j = 0; j < message.Routes.length; j++){
+            routeNames.push(routes[message.Routes[j]].ShortName);
+          }
+          if(message.Routes.length > 0){
+            var messageText = routeNames.join(', ') + ': ' + message.Message;
+          }
+          else var messageText = message.Message;
+          $('.message-holder').append('<p>' + messageText);
+        }
+        $('.message-holder').addClass(options.start_animation);
+      }
+    }
+  });
+}
+
 //removes the tables in preparation to load in the new ones. fancy CSS magic.
 function removeTables() {
   // stop alternating between time and interval
@@ -338,6 +389,7 @@ function removeTables() {
   //fade out stops and their departures
   $('h1').addClass(options.end_animation);
   $('.route').addClass(options.end_animation);
+  $('.message-holder').addClass(options.end_animation);
   //once we've given that END_ANIMATION_TIME to work, remove everything.
   setTimeout(function(){
     container.empty()
