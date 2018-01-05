@@ -368,7 +368,7 @@ function addMessages(){
           var message = applicableMessages[i];
           var routeNames = [];
           for(j = 0; j < message.Routes.length; j++){
-            routeNames.push(routes[message.Routes[j]].ShortName);
+            routeNames.push(routes[message.Routes[j]].RouteAbbreviation );
           }
           if(message.Routes.length > 0){
             var messageText = routeNames.join(', ') + ': ' + message.Message;
