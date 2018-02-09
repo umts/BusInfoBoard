@@ -168,7 +168,7 @@ function updateOptions() {
     }
   } else {
     sort_function = function(a, b) {
-      return a.Route.RouteAbbreviation > b.Route.RouteAbbreviation;
+      return a.Route.RouteAbbreviation.replace(/\D+/, '') > b.Route.RouteAbbreviation.replace(/\D+/, '');
     }
   }
 
