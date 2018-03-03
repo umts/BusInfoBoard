@@ -30,7 +30,6 @@ var options =
   excluded_trips: [],
   sort: "route",                  // default way to sort departures
   interval: 30000,                // default time in ms between refreshes
-  work_day_start: 4,              // default time a new transit day starts
   start_animation: 'fadeInDown',  // default animate CSS for each row to be added with
   end_animation: 'fadeOut',       // default animate CSS for everything to be removed with at once
   alternateInterval: 3000,        // default time in ms between alternating time and interval
@@ -47,10 +46,6 @@ var stop_index = 0;
 var MINIMUM_REFRESH_TIME = 5; // minimum number of seconds allowed for user input
 var CASCADE_SPEED = 75; // time in ms which each row will take to cascade
 var END_ANIMATION_TIME = 500; // the amount of time we give the ending animate CSS to work
-
-// The timezone at the beginning of the current day, used for making sure ETAs don't become
-// incorrect when switching between DST and...not DST.
-var dst_at_start;
 
 // Whether we're currently displaying the departure interval or the departure time.
 var currentTimeDisplay = 'interval';
@@ -164,7 +159,7 @@ function updateOptions() {
   }
   if (options.sort == "time") {
     sort_function = function(a, b) {
-      return a.Departure.EDT < b.Departure.EDT ? -1 : 1;
+      return a.Departure.EDTLocalTime < b.Departure.EDTLocalTime ? -1 : 1;
     }
   } else {
     sort_function = function(a, b) {
@@ -186,11 +181,6 @@ function updateOptions() {
     alternateInterval = Math.max(1000, alternateInterval);
     alternateInterval = Math.min(alternateInterval, options.interval / 2);
     options.alternateInterval = alternateInterval;
-  }
-
-  var work_day_start_string = query.work_day_start;
-  if (typeof work_day_start_string !== "undefined") {
-    options.work_day_start = parseInt(work_day_start_string) % 24;
   }
 
   var start_animation_query_string = query.start_animation;
@@ -267,12 +257,6 @@ function stopRefreshing() {
 
 function addTables() {
   var current = moment();
-  // Is it still "yesterday" as far as the transit agency is concerned
-  if (current.hour() <= options.work_day_start) {
-    dst_at_start = moment([current.year(), current.month(), current.date(), options.work_day_start]).subtract(1, "days").isDST();
-  } else {
-    dst_at_start = moment([current.year(), current.month(), current.date(), options.work_day_start]).isDST();
-  }
 
   var row, section;
   var size_class = "";
@@ -405,20 +389,9 @@ function renderRow(info, section) {
   var short_proportions = "col-xs-2 col-sm-2 col-md-2 col-lg-2";
   var long_proportions = "col-xs-15 col-sm-15 col-md-15 col-lg-15";
   var arrival_proportions = "col-xs-7 col-sm-7 col-md-7 col-lg-7";
-  var offset = 0;
   // If we aren't in the same timezone as we were this morning
-  if (dst_at_start != moment().isDST()) {
-    // If the day started in DST and isn't any more, that means that the clock
-    // has moved back an hour from where we want it to be, and we need to up it
-    // an hour to display the correct relative times. 
-    if (dst_at_start) {
-      offset = 1;
-    } else {
-      offset = -1;
-    }
-  }
-  var interval = departureInterval(info.Departure.EDT, offset);
-  var time = departureDisplayTime(info.Departure.EDT);
+  var interval = departureInterval(info.Departure.EDTLocalTime);
+  var time = departureDisplayTime(info.Departure.EDTLocalTime);
   var startingTimeDisplay;
   if(currentTimeDisplay == 'interval') startingTimeDisplay = interval;
   else startingTimeDisplay = time;
@@ -440,10 +413,10 @@ function renderRow(info, section) {
   );
 }
 
-function departureInterval(edt, offset){
+function departureInterval(edt){
   now = moment();
   edt = moment(edt);
-  nowInMinutes = (now.hour() + offset) * 60 + now.minute();
+  nowInMinutes = now.hour() * 60 + now.minute();
   edtInMinutes = edt.hour() * 60 + edt.minute();
   // Since EDT is always after now, the only reason the days will be different
   // is if the EDT is on the next day.
@@ -497,7 +470,7 @@ function getDepartureInfo(directions) {
           //and if it's not in the excluded trips
           && (options.excluded_trips.length == 0 || $.inArray(departure.Trip.InternetServiceDesc, options.excluded_trips) == -1)
           //and if it's in the future,
-          && moment(departure.EDT).isAfter(Date.now())) {
+          && moment(departure.EDTLocalTime).isAfter(Date.now())) {
         // then we push it to the list, and push its ISD to the unique ISDs list.
         unique_ISDs.push(departure.Trip.InternetServiceDesc);
         departures.push({Departure: departure, Route: route});
