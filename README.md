@@ -1,4 +1,4 @@
-This application uses [Avail Technologies'][avail] InfoPoint API endpoints to
+This application uses [Avail Technologies'][avail] InfoPoint [API endpoints][swagger] to
 show departures for specified stops. It was written by [UMass Transit][umts] IT
 for use by the [Pioneer Valley Transit Authority][pvta]. The application is
 intended for use on monitors and kiosks located at bus stops.
@@ -101,3 +101,4 @@ http://umts.github.io/BusInfoBoard/?stops=73&interval=5&start_animation=bounceIn
 [umts]: http://www.umass.edu/transit/
 [pvta]: http://www.pvta.com/
 [animate]: http://daneden.github.io/animate.css/
+[swagger]: http://bustracker.pvta.com/InfoPoint/swagger
