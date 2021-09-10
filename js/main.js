@@ -59,7 +59,7 @@ var alternateID;
 
 function QueryStringAsObject() {
   var pairs = location.search.slice(1).split('&');
-  
+
   var result = {};
   for(var i = 0; i < pairs.length; i++) {
       var pair = pairs[i].split('=');
@@ -279,7 +279,7 @@ function addTables() {
   if (options.stops.length > 1) {
     size_class = "col-lg-12";
   }
-  // There are two separate calls here, 
+  // There are two separate calls here,
   $.ajax({
     url: options.url + "stops/get/" + options.stops[stop_index],
     success: function(stop_info) {
@@ -410,7 +410,7 @@ function renderRow(info, section) {
   if (dst_at_start != moment().isDST()) {
     // If the day started in DST and isn't any more, that means that the clock
     // has moved back an hour from where we want it to be, and we need to up it
-    // an hour to display the correct relative times. 
+    // an hour to display the correct relative times.
     if (dst_at_start) {
       offset = 1;
     } else {
@@ -497,7 +497,9 @@ function getDepartureInfo(directions) {
           //and if it's not in the excluded trips
           && (options.excluded_trips.length == 0 || $.inArray(departure.Trip.InternetServiceDesc, options.excluded_trips) == -1)
           //and if it's in the future,
-          && moment(departure.EDT).isAfter(Date.now())) {
+          && moment(departure.EDT).isAfter(Date.now())
+          //and it's not skipped
+          && departure.StopStatusReportLabel != 'Skipped') {
         // then we push it to the list, and push its ISD to the unique ISDs list.
         unique_ISDs.push(departure.Trip.InternetServiceDesc);
         departures.push({Departure: departure, Route: route});
