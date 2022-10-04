@@ -69,14 +69,14 @@ p {
 
 .route_abbreviation {
   flex: 1;
-  margin-left: 2rem;
+  margin: 0 2rem;
 }
 
 .route_long_name {
-  flex: 8;
+  flex: 9;
 }
 
 .route_arrival {
-  flex: 2;
-  margin-right: 2rem;
+  flex: 4;
+  margin: 0 2rem;
 }
