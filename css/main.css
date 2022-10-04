@@ -6,10 +6,6 @@ html, body {
   font-size: 6px;
 }
 
-* {
-  box-sizing: inherit;
-}
-
 /* sm */
 @media (min-width: 768px) {
   html {
@@ -55,8 +51,7 @@ h2 {
   margin-bottom: 10px;
   font-size: 3rem;
   font-weight: bold;
-  overflow: hidden;
-  padding: 0 20px;
+  display: flex;
 }
 
 .route_arrival {
@@ -70,4 +65,18 @@ h2 {
 
 p {
   font-size: 2rem;
+}
+
+.route_abbreviation {
+  flex: 1;
+  margin-left: 2rem;
+}
+
+.route_long_name {
+  flex: 8;
+}
+
+.route_arrival {
+  flex: 2;
+  margin-right: 2rem;
 }
