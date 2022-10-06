@@ -70,7 +70,7 @@ function QueryStringAsObject() {
 }
 
 $(function(){
-  container = $('.main-content');
+  container = $('#main-content');
   updateOptions();
   initTitle();
   initBoard();
@@ -274,6 +274,9 @@ function addTables() {
     dst_at_start = moment([current.year(), current.month(), current.date(), options.work_day_start]).isDST();
   }
 
+  var stopContainer = $('<div class="stop-container"></div>');
+  container.append(stopContainer);
+
   // There are two separate calls here,
   $.ajax({
     url: options.url + "stops/get/" + options.stops[stop_index],
@@ -282,7 +285,7 @@ function addTables() {
         url: options.url + "stopdepartures/get/" + options.stops[stop_index],
         success: function(departure_data) {
           // Draw the header for each stop
-          container.append('<h1 class="animated ' + options.start_animation + '">' + stop_info.Description + "</h1>");
+          stopContainer.append('<h1 class="animated ' + options.start_animation + '">' + stop_info.Description + "</h1>");
           departure_data[0] = departure_data[0] || {RouteDirections: []}
           var infos = getDepartureInfo(departure_data[0].RouteDirections);
           var done = isDone(departure_data[0].RouteDirections);
@@ -293,14 +296,14 @@ function addTables() {
             } else {
               message = "No departures in the next two hours";
             }
-            container.append('<h2 class="animated ' + options.start_animation + '">' + message + '</h2>');
+            stopContainer.append('<h2 class="animated ' + options.start_animation + '">' + message + '</h2>');
           }
           var i = 0; // For that soothing cascading effect
           var id = setInterval(function() {
               // If we still have rows to render
               if (i < infos.length) {
                 if(options.showMessages !== 'only')
-                  renderRow(infos[i], container);
+                  renderRow(infos[i], stopContainer);
                 i++;
               } else { // If not, clear out the timer and move onto the next route
                 clearTimeout(id);
