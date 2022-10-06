@@ -419,12 +419,19 @@ function renderRow(info, section) {
   }
   var interval = departureInterval(info.Departure.EDT, offset);
   var time = departureDisplayTime(info.Departure.EDT);
-  var startingTimeDisplay;
+  var startingTimeDisplay, style;
   if(currentTimeDisplay == 'interval') startingTimeDisplay = interval;
   else startingTimeDisplay = time;
+
+  if (info.Route.Color == '000000') {
+    style = 'style="background-color: #' + info.Route.Color + '; color: #' + info.Route.TextColor +
+      '; border: solid white"'
+  } else {
+    style = 'style="background-color: #' + info.Route.Color + '; color: #' + info.Route.TextColor + '"'
+  }
+
   section.append(
-    '<div class="route animated ' + options.start_animation +
-    '" style="background-color: #' + info.Route.Color + '; color: #' + info.Route.TextColor + '">' +
+    '<div class="route animated ' + options.start_animation + '" ' + style + '>' +
       '<div class="row">' +
         '<div class="route_abbreviation ' + short_proportions + '">' +
           info.Route.RouteAbbreviation +
