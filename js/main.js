@@ -70,7 +70,7 @@ function QueryStringAsObject() {
 }
 
 $(function(){
-  container = $('.main-content');
+  container = $('#main-content');
   updateOptions();
   initTitle();
   initBoard();
@@ -274,30 +274,18 @@ function addTables() {
     dst_at_start = moment([current.year(), current.month(), current.date(), options.work_day_start]).isDST();
   }
 
-  var row, section;
-  var size_class = "";
-  if (options.stops.length > 1) {
-    size_class = "col-lg-12";
-  }
+  var stopContainer = $('<div class="stop-container"></div>');
+  container.append(stopContainer);
+
   // There are two separate calls here,
   $.ajax({
     url: options.url + "stops/get/" + options.stops[stop_index],
     success: function(stop_info) {
-      if (stop_index % 2 == 0) {
-        row = $('<div class="row route-holder"></div>');
-      } else {
-        row = $('.route-holder:last');
-      }
-      section = $('<div class="col-xs-24 ' + size_class + '"></div>"');
-      row.append(section);
-      if (stop_index % 2 == 0) {
-        container.append(row);
-      }
       $.ajax({
         url: options.url + "stopdepartures/get/" + options.stops[stop_index],
         success: function(departure_data) {
           // Draw the header for each stop
-          section.append('<h1 class="animated ' + options.start_animation + '">' + stop_info.Description + "</h1>");
+          stopContainer.append('<h1 class="animated ' + options.start_animation + '">' + stop_info.Description + "</h1>");
           departure_data[0] = departure_data[0] || {RouteDirections: []}
           var infos = getDepartureInfo(departure_data[0].RouteDirections);
           var done = isDone(departure_data[0].RouteDirections);
@@ -308,14 +296,14 @@ function addTables() {
             } else {
               message = "No departures in the next two hours";
             }
-            section.append('<h2 class="animated ' + options.start_animation + '">' + message + '</h2>');
+            stopContainer.append('<h2 class="animated ' + options.start_animation + '">' + message + '</h2>');
           }
           var i = 0; // For that soothing cascading effect
           var id = setInterval(function() {
               // If we still have rows to render
               if (i < infos.length) {
                 if(options.showMessages !== 'only')
-                  renderRow(infos[i], section);
+                  renderRow(infos[i], stopContainer);
                 i++;
               } else { // If not, clear out the timer and move onto the next route
                 clearTimeout(id);
@@ -402,9 +390,6 @@ function removeTables() {
 // at the end of 30-3 EVE, which is on route 30 and northbound, just like North Amherst,
 // but has a different trip description).
 function renderRow(info, section) {
-  var short_proportions = "col-xs-2 col-sm-2 col-md-2 col-lg-2";
-  var long_proportions = "col-xs-15 col-sm-15 col-md-15 col-lg-15";
-  var arrival_proportions = "col-xs-7 col-sm-7 col-md-7 col-lg-7";
   var offset = 0;
   // If we aren't in the same timezone as we were this morning
   if (dst_at_start != moment().isDST()) {
@@ -432,16 +417,14 @@ function renderRow(info, section) {
 
   section.append(
     '<div class="route animated ' + options.start_animation + '" ' + style + '>' +
-      '<div class="row">' +
-        '<div class="route_abbreviation ' + short_proportions + '">' +
-          info.Route.RouteAbbreviation +
-        '</div>' +
-        '<div class="route_long_name ' + long_proportions + '">' +
-          info.Departure.Trip.InternetServiceDesc +
-        '</div>' +
-        '<div class="route_arrival ' + arrival_proportions + '" data-time="' + time + '" data-interval="' + interval + '">' +
-           startingTimeDisplay +
-        '</div>'+
+      '<div class="route_abbreviation">' +
+        info.Route.RouteAbbreviation +
+      '</div>' +
+      '<div class="route_long_name">' +
+        info.Departure.Trip.InternetServiceDesc +
+      '</div>' +
+      '<div class="route_arrival" data-time="' + time + '" data-interval="' + interval + '">' +
+         startingTimeDisplay +
       '</div>'+
     '</div>'
   );
