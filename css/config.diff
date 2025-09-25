@@ -1,0 +1,147 @@
+# This file is a diff between an  un-modified Bootstrap 3.4 config (left) and
+# the Bootstrap setup in this project (right). It more-or-less amounts to:
+#   * 12 -> 24 grid columns
+#   * sm, md, and lg breakpoints changed
+#   * No JS components
+#   * Only `grid.less` and `responsive-utilities.less` for CSS components
+#
+4,9c4,9
+<     "@gray-darker": "lighten(@gray-base, 13.5%)",
+<     "@gray-dark": "lighten(@gray-base, 20%)",
+<     "@gray": "lighten(@gray-base, 33.5%)",
+<     "@gray-light": "lighten(@gray-base, 46.7%)",
+<     "@gray-lighter": "lighten(@gray-base, 93.5%)",
+<     "@brand-primary": "darken(#428bca, 6.5%)",
+---
+>     "@gray-darker": "lighten(#000, 13.5%)",
+>     "@gray-dark": "lighten(#000, 20%)",
+>     "@gray": "lighten(#000, 33.5%)",
+>     "@gray-light": "lighten(#000, 46.7%)",
+>     "@gray-lighter": "lighten(#000, 93.5%)",
+>     "@brand-primary": "#428bca",
+25c25
+<     "@font-size-small": "ceil((@font-size-base * .85))",
+---
+>     "@font-size-small": "ceil((@font-size-base * 0.85))",
+31c31
+<     "@font-size-h6": "ceil((@font-size-base * .85))",
+---
+>     "@font-size-h6": "ceil((@font-size-base * 0.85))",
+49c49
+<     "@line-height-large": "1.3333333",
+---
+>     "@line-height-large": "1.33",
+96c96
+<     "@input-color-placeholder": "#999",
+---
+>     "@input-color-placeholder": "@gray-light",
+107c107
+<     "@dropdown-border": "rgba(0, 0, 0, .15)",
+---
+>     "@dropdown-border": "rgba(0,0,0,.15)",
+121c121
+<     "@screen-sm": "768px",
+---
+>     "@screen-sm": "900px",
+124c124
+<     "@screen-md": "992px",
+---
+>     "@screen-md": "1600px",
+127c127
+<     "@screen-lg": "1200px",
+---
+>     "@screen-lg": "1920px",
+133c133
+<     "@grid-columns": "12",
+---
+>     "@grid-columns": "24",
+137c137
+<     "@container-tablet": "(720px + @grid-gutter-width)",
+---
+>     "@container-tablet": "((720px + @grid-gutter-width))",
+139c139
+<     "@container-desktop": "(940px + @grid-gutter-width)",
+---
+>     "@container-desktop": "((940px + @grid-gutter-width))",
+141c141
+<     "@container-large-desktop": "(1140px + @grid-gutter-width)",
+---
+>     "@container-large-desktop": "((1140px + @grid-gutter-width))",
+165c165
+<     "@navbar-inverse-color": "lighten(@gray-light, 15%)",
+---
+>     "@navbar-inverse-color": "@gray-light",
+168c168
+<     "@navbar-inverse-link-color": "lighten(@gray-light, 15%)",
+---
+>     "@navbar-inverse-link-color": "@gray-light",
+240c240
+<     "@popover-border-color": "rgba(0, 0, 0, .2)",
+---
+>     "@popover-border-color": "rgba(0,0,0,.2)",
+244c244
+<     "@popover-arrow-color": "@popover-bg",
+---
+>     "@popover-arrow-color": "#fff",
+260c260
+<     "@modal-content-border-color": "rgba(0, 0, 0, .2)",
+---
+>     "@modal-content-border-color": "rgba(0,0,0,.2)",
+353c353
+<     "@carousel-text-shadow": "0 1px 2px rgba(0, 0, 0, .6)",
+---
+>     "@carousel-text-shadow": "0 1px 2px rgba(0,0,0,.6)",
+385,387d384
+<     "print.less",
+<     "type.less",
+<     "code.less",
+389,418c386
+<     "tables.less",
+<     "forms.less",
+<     "buttons.less",
+<     "responsive-utilities.less",
+<     "glyphicons.less",
+<     "button-groups.less",
+<     "input-groups.less",
+<     "navs.less",
+<     "navbar.less",
+<     "breadcrumbs.less",
+<     "pagination.less",
+<     "pager.less",
+<     "labels.less",
+<     "badges.less",
+<     "jumbotron.less",
+<     "thumbnails.less",
+<     "alerts.less",
+<     "progress-bars.less",
+<     "media.less",
+<     "list-group.less",
+<     "panels.less",
+<     "responsive-embed.less",
+<     "wells.less",
+<     "close.less",
+<     "component-animations.less",
+<     "dropdowns.less",
+<     "tooltip.less",
+<     "popovers.less",
+<     "modals.less",
+<     "carousel.less"
+---
+>     "responsive-utilities.less"
+420,433c388
+<   "js": [
+<     "alert.js",
+<     "button.js",
+<     "carousel.js",
+<     "dropdown.js",
+<     "modal.js",
+<     "tooltip.js",
+<     "popover.js",
+<     "tab.js",
+<     "affix.js",
+<     "collapse.js",
+<     "scrollspy.js",
+<     "transition.js"
+<   ]
+---
+>   "js": []
