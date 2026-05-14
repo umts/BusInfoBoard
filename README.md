@@ -4,7 +4,7 @@
 
 You are almost certainly looking for [the new departure board](https://github.com/umts/departure-board). If this
 application even loads, it will automatically redirect you to the new version. This repository is being kept
-up strictly to provide a migration path and posterity reasons.
+up strictly to provide a migration path and for posterity reasons.
 
 --- 
 
