@@ -1,10 +1,17 @@
-# BusInfoBoard
+BusInfoBoard
+============
 
-**THIS APPLICATION HAS BEEN REPLACED.**
-
-You are almost certainly looking for [the new departure board](https://github.com/umts/departure-board). If this
-application even loads, it will automatically redirect you to the new version. This repository is being kept
-up strictly to provide a migration path and for posterity reasons.
+> [!CAUTION]
+> **This Application Has Been Replaced.**
+>
+> You are almost certainly looking for
+> [the new departure board](https://github.com/umts/departure-board). If this
+> application even loads, it will automatically redirect you to the new version.
+> This repository is being kept up strictly to provide a migration path and for
+> posterity.
+>
+> The final functional release of this application is available
+> [under the `final` tag](https://github.com/umts/BusInfoBoard/tree/final).
 
 --- 
 
@@ -88,25 +95,6 @@ example:
   "excluded_trips": ["Bus Garage via Mass Ave", "Bus Garage via Compsci"]
 }
 ```
-
-Examples
---------
-All 7 Holyoke Transportation Center Gates:
-
-http://umts.github.io/BusInfoBoard/?stops=9098+9097+9096+9089+9088+9087+9086
-
-UMass campus shuttle at ILC and Morrill:
-
-http://umts.github.io/BusInfoBoard/?stops=64+63&routes=34+35
-
-All buses at the Academy of Music, ordered by departure time:
-
-http://umts.github.io/BusInfoBoard/?stops=261&sort=time
-
-Haigis Mall with more "flair" :trollface::
-
-http://umts.github.io/BusInfoBoard/?stops=73&interval=5&start_animation=bounceIn&end_animation=rotateOutUpRight
-
 [avail]: http://www.availtec.com/
 [umts]: http://www.umass.edu/transit/
 [pvta]: http://www.pvta.com/
