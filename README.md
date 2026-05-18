@@ -1,3 +1,13 @@
+# BusInfoBoard
+
+**THIS APPLICATION HAS BEEN REPLACED.**
+
+You are almost certainly looking for [the new departure board](https://github.com/umts/departure-board). If this
+application even loads, it will automatically redirect you to the new version. This repository is being kept
+up strictly to provide a migration path and for posterity reasons.
+
+--- 
+
 This application uses [Avail Technologies'][avail] InfoPoint [API endpoints][swagger] to
 show departures for specified stops. It was written by [UMass Transit][umts] IT
 for use by the [Pioneer Valley Transit Authority][pvta]. The application is
